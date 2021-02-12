@@ -1,4 +1,4 @@
-package net.octopvp.octobot;
+package net.badbird5907.jdacommand;
 
 import lombok.Getter;
 import lombok.Setter;

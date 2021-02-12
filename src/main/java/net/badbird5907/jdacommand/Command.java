@@ -1,4 +1,4 @@
-package net.octopvp.octobot;
+package net.badbird5907.jdacommand;
 
 public abstract class Command {
     protected String name = "null";
