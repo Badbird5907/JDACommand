@@ -17,7 +17,12 @@ public class JDACommand {
         instance = this;
         jda.addEventListener(new MessageListener());
     }
-    public static void registerCommand(Command command){
+    public void debug_printCommands(){
+        commands.forEach((cmd) ->{
+            System.out.println(cmd.name);
+        });
+    }
+    public void registerCommand(Command command){
         commands.add(command);
     }
 
