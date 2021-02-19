@@ -17,13 +17,13 @@ public class CommandEvent {
 	private MessageReceivedEvent event;
 	private User author;
 	private Guild guild;
-
-	public CommandEvent(final String[] args, final MessageChannel channel, final Message message, final MessageReceivedEvent event, final User author, final Guild guild) {
+	//args channel message event, author, guild
+	public CommandEvent(final String[] args,final MessageReceivedEvent event) {
 		this.args = args;
-		this.channel = channel;
-		this.message = message;
+		this.channel = event.getChannel();
+		this.message = event.getMessage();
 		this.event = event;
-		this.guild = guild;
-		this.author = author;
+		this.guild = event.getGuild();
+		this.author = event.getAuthor();
 	}
 }
