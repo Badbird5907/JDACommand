@@ -20,7 +20,7 @@ A simple JDA command library, still a WIP
 	<dependency>
 	    <groupId>com.github.Badbird-5907</groupId>
 	    <artifactId>JDACommand</artifactId>
-	    <version>v1.0-STABLE</version>
+	    <version>v1.1-STABLE</version>
 	</dependency>
 ```
 
