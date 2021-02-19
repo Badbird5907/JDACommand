@@ -37,7 +37,7 @@ public class MessageListener extends ListenerAdapter {
         String[] args = a.split(" ");
         JDACommand.commands.forEach(cmd ->{
             if(cmd.name.equalsIgnoreCase(args1[0].replaceFirst(JDACommand.getInstance().prefix, ""))){
-                cmd.execute(args, new CommandEvent(args, e.getChannel(), e.getMessage(), e));
+                cmd.execute(args, new CommandEvent(args,e.getChannel(),e.getMessage(),e,e.getAuthor(),e.getGuild()),e.getAuthor(),e.getGuild());
             }
         });
     }
