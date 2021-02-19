@@ -18,7 +18,7 @@ A simple JDA command library, still a WIP
 	<dependency>
 	    <groupId>com.github.Badbird-5907</groupId>
 	    <artifactId>JDACommand</artifactId>
-	    <version>Tag</version>
+	    <version>v1.0-STABLE</version>
 	</dependency>
 ```
 
