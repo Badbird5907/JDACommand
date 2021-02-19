@@ -1,4 +1,5 @@
 # JDACommand
+[![](https://jitpack.io/v/Badbird-5907/JDACommand.svg)](https://jitpack.io/#Badbird-5907/JDACommand) <br>
 A simple JDA command library, still a WIP
 # Building
 1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
