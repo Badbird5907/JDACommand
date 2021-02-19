@@ -74,3 +74,4 @@ MIT License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 tl;dr: You can use this code as you wish.
+Also see [this](https://github.com/Badbird-5907/JDACommand/blob/master/license.md)
