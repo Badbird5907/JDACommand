@@ -27,7 +27,6 @@ public class MessageListener extends ListenerAdapter {
             });
         }
          */
-        System.out.println(e.getMessage().getContentRaw());
         if(!e.getMessage().getContentRaw().startsWith(JDACommand.getInstance().prefix))
             return;
         if(e.getMessage().getAuthor().isBot())
