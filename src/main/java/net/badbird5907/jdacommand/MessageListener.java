@@ -31,8 +31,7 @@ public class MessageListener extends ListenerAdapter {
             });
         }
          */
-		out.println(e.getMessage().getContentRaw());
-		if (!e.getMessage().getContentRaw().startsWith(getInstance().prefix)) return;
+		if (!e.getMessage().getContentRaw().startsWith(getInstance().prefix) || e.getMessage().getAuthor().isBot()) return;
 		String[] args1 = e.getMessage().getContentRaw().split(" "), args = e.getMessage().getContentRaw().replaceFirst(args1[0], "").split(" ");
 		commands.stream().filter(cmd -> cmd.name.equalsIgnoreCase(args1[0].replaceFirst(getInstance().prefix, ""))).forEach(cmd -> cmd.execute(args, new CommandEvent(args, e.getChannel(), e.getMessage(), e)));
 	}
