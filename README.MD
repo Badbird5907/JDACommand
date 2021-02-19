@@ -4,8 +4,9 @@ A simple JDA command library, still a WIP
 1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
 2. Open the folder "JDACommand" in cmd
 3. Run `mvn clean package` (https://maven.apache.org/)
-#Usage
-##Code Example:
+#Usage:
+
+##Code Examples:
 
 ```java
 import net.badbird5907.jdacommand.Command;
