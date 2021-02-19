@@ -3,8 +3,6 @@ package net.badbird5907.jdacommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.util.Arrays;
-
 public class MessageListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e){
@@ -31,6 +29,8 @@ public class MessageListener extends ListenerAdapter {
          */
         System.out.println(e.getMessage().getContentRaw());
         if(!e.getMessage().getContentRaw().startsWith(JDACommand.getInstance().prefix))
+            return;
+        if(e.getMessage().getAuthor().isBot())
             return;
         String[] args1 = e.getMessage().getContentRaw().split(" ");
         String a = e.getMessage().getContentRaw().replaceFirst(args1[0], "");
