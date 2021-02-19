@@ -5,6 +5,23 @@ A simple JDA command library, still a WIP
 2. Open the folder "JDACommand" in cmd
 3. Run `mvn clean package` (https://maven.apache.org/)
 
+# Maven Dependency
+```xml
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+```
+```xml
+	<dependency>
+	    <groupId>com.github.Badbird-5907</groupId>
+	    <artifactId>JDACommand</artifactId>
+	    <version>Tag</version>
+	</dependency>
+```
+
 # Usage:
 
 ## Code Examples:
