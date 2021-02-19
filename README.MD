@@ -20,7 +20,7 @@ A simple JDA command library, still a WIP
 	<dependency>
 	    <groupId>com.github.Badbird-5907</groupId>
 	    <artifactId>JDACommand</artifactId>
-	    <version>v1.1-STABLE</version>
+	    <version>v1.1.1-STABLE</version>
 	</dependency>
 ```
 
@@ -40,7 +40,7 @@ public class YourClass {
         JDA jda = new JDABuilder.create("token").build;
         JDACommand command = new JDACommand("prefix", jda);
         command.init();
-        command.registerCommand(new YourCommandClass("Hello World", "Responds With \"Hello World\""));
+        command.registerCommand(new YourCommandClass("Hello", "Responds With \"Hello World\""));
     }
 }
 
@@ -55,3 +55,22 @@ public class YourCommandClass extends Command {
     }
 }
 ```
+# License
+MIT License
+```
+    Copyright (C) 2021  Badbird-5907
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
+tl;dr: You can use this code as you wish.
