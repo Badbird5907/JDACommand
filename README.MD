@@ -56,7 +56,7 @@ public class YourCommandClass extends Command {
 }
 ```
 # License
-MIT License
+GNU General Public License
 ```
     Copyright (C) 2021  Badbird-5907
 
