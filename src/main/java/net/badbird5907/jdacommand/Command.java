@@ -14,5 +14,5 @@ public abstract class Command {
 		this.name = name;
 		this.desc = desc;
 	}
-    protected abstract void execute(String[] args, CommandEvent event, User author, Guild guild, MessageChannel channel);
+    protected abstract CommandResult execute(String[] args, CommandEvent event, User author, Guild guild, MessageChannel channel);
 }
