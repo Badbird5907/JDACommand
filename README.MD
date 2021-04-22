@@ -8,20 +8,13 @@ A simple JDA command library, still a WIP
 3. Run `mvn clean package` (https://maven.apache.org/)
 
 # Maven Dependency
+The library is hosted on the maven central repo so just simply add this:
 ```xml
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
-```
-```xml
-	<dependency>
-	    <groupId>com.github.Badbird-5907</groupId>
-	    <artifactId>JDACommand</artifactId>
-	    <version>v1.1.1-STABLE</version>
-	</dependency>
+<dependency>
+    <groupId>net.badbird5907</groupId>
+    <artifactId>JDACommand</artifactId>
+    <version>1.1-REL</version>
+</dependency>
 ```
 
 # Usage:
