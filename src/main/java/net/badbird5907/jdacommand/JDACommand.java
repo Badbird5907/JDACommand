@@ -26,7 +26,7 @@ public class JDACommand {
 		jda.addEventListener(new MessageListener());
 	}
 
-	public void debug_printCommands() {
+	public void debugPrintCommands() {
 		commands.forEach(cmd -> out.println(cmd.name));
 	}
 
