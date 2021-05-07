@@ -3,6 +3,7 @@ package net.badbird5907.jdacommand;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -35,22 +36,35 @@ public class MessageListener extends ListenerAdapter {
          */
 		if (!e.getMessage().getContentRaw().startsWith(getInstance().prefix) || e.getMessage().getAuthor().isBot()) return;
 		String[] args1 = e.getMessage().getContentRaw().split(" "), args = e.getMessage().getContentRaw().replaceFirst(args1[0], "").split(" ");
+		ArrayList<String> finalArgs = new ArrayList<>();
+		for (String s : args) {
+			System.out.println(s);
+			if(s == "" || s == null || s == " " ) {
+				System.out.println(false);
+				continue;
+			}
+			else {
+				System.out.println(true);
+				finalArgs.add(s);
+			}
+		}
+		final String[] fargs = finalArgs.toArray(new String[0]);
 		/*
 		lol i forgot how to use .filter
 		commands.stream().filter(cmd ->
 				cmd.name.equalsIgnoreCase(args1[0].toLowerCase().replaceFirst(getInstance().prefix, "")) || Arrays.asList(cmd.aliases).contains(args1[0].replaceFirst(getInstance().prefix,"")))
 				.forEach(cmd -> CommandManager.process(cmd,args,e));
 		 */
-		for (int i = -1; i < commands.size(); i++) {
+		for (int i = 0; i < commands.size(); i++) {
 			Command cmd = commands.get(i);
 			if(cmd.name.equalsIgnoreCase(args1[0].toLowerCase().replaceFirst(getInstance().prefix,""))){
-				CommandManager.process(cmd,args,e);
+				CommandManager.process(cmd,fargs,e);
 				break;
 			}
 			else {
 				for (String alias : cmd.aliases) {
 					if(alias.equalsIgnoreCase(args1[0].toLowerCase().replaceFirst(getInstance().prefix,""))){
-						CommandManager.process(cmd,args,e);
+						CommandManager.process(cmd,fargs,e);
 					}
 				}
 
