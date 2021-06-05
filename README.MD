@@ -14,7 +14,7 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>1.1-REL</version>
+    <version>1.3-REL</version>
 </dependency>
 ```
 
