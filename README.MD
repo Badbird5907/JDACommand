@@ -8,7 +8,7 @@ A simple JDA command library, still a WIP
 2. Open the folder "JDACommand" in cmd
 3. Run `mvn clean package` (https://maven.apache.org/)
 
-# Maven Dependency
+#Dependency
 The library is hosted on the maven central repo so just simply add this:
 ```xml
 <dependency>
@@ -16,6 +16,12 @@ The library is hosted on the maven central repo so just simply add this:
     <artifactId>JDACommand</artifactId>
     <version>1.4.0-REL</version>
 </dependency>
+```
+Or alternatively, if you use gradle:
+```groovy
+dependencies{
+    implementation 'net.badbird5907:JDACommand:1.4.0-REL'
+}
 ```
 #Wiki
 |  Name  |  Link  |
