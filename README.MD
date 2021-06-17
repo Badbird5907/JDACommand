@@ -14,7 +14,7 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>1.3.1-REL</version>
+    <version>1.4.0-REL</version>
 </dependency>
 ```
 
@@ -33,7 +33,6 @@ public class YourClass {
     public static void main(String[] args) {
         JDA jda = new JDABuilder.create("token").build;
         JDACommand command = new JDACommand("prefix", jda);
-        command.init();
         command.registerCommand(new YourCommandClass("Hello", "Responds With \"Hello World\""));
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import static java.lang.System.out;
 
 public class JDACommand {
-	public static List<Command> commands = new ArrayList<>();
+	public static ArrayList<Command> commands = new ArrayList<>();
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
@@ -16,6 +16,7 @@ public class JDACommand {
 	public JDACommand(String prefix, JDA jda) {
 		this.prefix = prefix;
 		this.jda = jda;
+		init();
 	}
 
 	public static JDACommand getInstance() {
