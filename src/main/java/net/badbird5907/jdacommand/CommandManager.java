@@ -9,7 +9,7 @@ public class CommandManager {
     public static void process(Method cmd, String[] args, MessageReceivedEvent e){
         try {
             CommandResult result = (CommandResult) cmd.invoke(args, new CommandEvent(args, e),e.getAuthor(),e.getMember(),e.getGuild(),e.getChannel());
-            if((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER)){
+            if((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null){
                 e.getChannel().sendMessage(result.getMessage());
             }
         } catch (IllegalAccessException illegalAccessException) {

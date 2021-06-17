@@ -58,7 +58,8 @@ public class YourCommandClass extends CommandBase {
     }
 }
 ```
-###OR:
+### OR:
+
 You can do this:
 ```java
 import net.badbird5907.jdacommand.Command;
