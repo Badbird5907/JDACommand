@@ -8,7 +8,7 @@ A simple JDA command library, still a WIP
 2. Open the folder "JDACommand" in cmd
 3. Run `mvn clean package` (https://maven.apache.org/)
 
-#Dependency
+# Dependency
 The library is hosted on the maven central repo so just simply add this:
 ```xml
 <dependency>
@@ -23,7 +23,7 @@ dependencies{
     implementation 'net.badbird5907:JDACommand:1.4.0-REL'
 }
 ```
-#Wiki
+# Wiki
 |  Name  |  Link  |
 |---|---|
 |  Main Wiki Page  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki)  |
