@@ -21,7 +21,8 @@ public class CommandEvent {
 		this.channel = event.getChannel();
 		this.message = event.getMessage();
 		this.event = event;
-		this.guild = event.getGuild();
+		if (event.getChannelType().isGuild()) //fix NPE when dming bot
+			this.guild = event.getGuild();
 		this.author = event.getAuthor();
 		this.member = event.getMember();
 	}

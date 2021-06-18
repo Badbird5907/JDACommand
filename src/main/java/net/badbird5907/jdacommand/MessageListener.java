@@ -1,5 +1,7 @@
 package net.badbird5907.jdacommand;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -26,8 +28,34 @@ public class MessageListener extends ListenerAdapter {
 		final String command = e.getMessage().getContentRaw().replaceFirst(getInstance().prefix, "").toLowerCase().split(" ")[0];
 
 		JDACommand.getCommandMap().forEach((name,pair)->{
-			if (command.equalsIgnoreCase(name)){
-				CommandManager.process(pair.getValue1(),fargs,e);
+			if (command.equalsIgnoreCase(name)){ //TODO custom error messages
+				Command c = pair.getValue0();
+				if (c.disable())
+					return;
+				if (c.botOwnerOnly())
+					if (!JDACommand.getInstance().isOwner(e.getAuthor())) {
+						return;
+					}
+				if (c.serverOwnerOnly())
+					if (e.getChannelType() == ChannelType.CATEGORY && !e.getMember().isOwner())
+						return;
+				if (c.dmsOnly())
+					if (e.getChannelType() != ChannelType.PRIVATE)
+						return;
+				if (c.serverOnly())
+					if (e.getChannelType() != ChannelType.CATEGORY)
+						return;
+				if (c.adminOnly())
+					if (e.getChannelType() == ChannelType.CATEGORY && !e.getMember().getPermissions().contains(Permission.ADMINISTRATOR))
+						return;
+				if (c.permission().length != 0){
+					if (e.getChannelType() == ChannelType.CATEGORY){
+						Permission[] permissions = c.permission();
+						if (!e.getMember().getPermissions().contains(permissions[0]))
+							return;
+					}
+				}
+				CommandManager.process(pair.getValue1(),fargs,e,JDACommand.getCommandMap().get(name.toLowerCase()).getValue2());
 			}
 		});
 	}
