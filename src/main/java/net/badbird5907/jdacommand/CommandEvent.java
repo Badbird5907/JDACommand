@@ -26,4 +26,7 @@ public class CommandEvent {
 		this.author = event.getAuthor();
 		this.member = event.getMember();
 	}
+	public void acknowledgeMessage(){
+		getMessage().addReaction("✅").queue();
+	}
 }

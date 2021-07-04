@@ -8,7 +8,7 @@
 	<!--
 	<version>1.0-TEST</version>
 	-->
-	<version>AnnotationTest-1.0</version>
+	<version>AnnotationTest-1.2</version>
 	<groupId>net.badbird5907</groupId>
 	<url>https://github.com/Badbird-5907/JDACommand/</url>
 	<description>A simple command library for JDA bots</description>

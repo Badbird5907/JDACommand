@@ -13,7 +13,7 @@ public class MessageListener extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e) {
 
-		if (!e.getMessage().getContentRaw().startsWith(getInstance().prefix) || e.getMessage().getAuthor().isBot()) return;
+		if (!e.getMessage().getContentRaw().toLowerCase().startsWith(getInstance().prefix.toLowerCase()) || e.getMessage().getAuthor().isBot()) return;
 
 		ArrayList<String> finalArgs = new ArrayList<>();
 		int a = 0;
@@ -25,7 +25,7 @@ public class MessageListener extends ListenerAdapter {
 			finalArgs.add(s);
 		}
 		final String[] fargs = finalArgs.toArray(new String[0]);
-		final String command = e.getMessage().getContentRaw().replaceFirst(getInstance().prefix, "").toLowerCase().split(" ")[0];
+		final String command = e.getMessage().getContentRaw().replaceFirst("(?i)" + getInstance().prefix, "").toLowerCase().split(" ")[0];
 
 		JDACommand.getCommandMap().forEach((name,pair)->{
 			if (command.equalsIgnoreCase(name)){ //TODO custom error messages
