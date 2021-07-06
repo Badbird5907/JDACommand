@@ -20,4 +20,5 @@ public @interface Command {
     boolean disable() default false;
     boolean dmsOnly() default false;
     boolean serverOnly() default false;
+    CommandType commandType() default CommandType.UTIL;
 }
