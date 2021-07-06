@@ -31,6 +31,7 @@ public class JDACommand {
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
+	@Getter
 	private List<Long> owners = new ArrayList<>();
 	private List<Object> alreadyInit = new ArrayList<>();
 
