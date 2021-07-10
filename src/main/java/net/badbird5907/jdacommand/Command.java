@@ -1,22 +1,24 @@
 package net.badbird5907.jdacommand;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.Permission;
 
-public abstract class Command {
-	protected String name;
-	protected String desc;
-	protected String[] aliases;
-	public Command(String name, String desc) {
-		this.name = name;
-		this.desc = desc;
-		this.aliases = new String[]{};
-	}
-	public Command(String name, String desc, String[] aliases){
-		this.name = name;
-		this.desc = desc;
-		this.aliases = aliases;
-	}
-    protected abstract CommandResult execute(String[] args, CommandEvent event, User author, Guild guild, MessageChannel channel);
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Command {
+    String name();
+    String description() default "";
+    String[] aliases() default {};
+    Permission[] permission() default {}; //can't do Permission permission() default null, because this is a annotation
+    boolean botOwnerOnly() default false;
+    boolean serverOwnerOnly() default false;
+    boolean adminOnly() default false;
+    boolean disable() default false;
+    boolean dmsOnly() default false;
+    boolean serverOnly() default false;
+    CommandType commandType() default CommandType.UTIL;
 }
