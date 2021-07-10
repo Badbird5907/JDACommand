@@ -15,10 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -32,7 +29,7 @@ public class JDACommand {
 	public String prefix;
 	public JDA jda;
 	@Getter
-	private List<Long> owners = new ArrayList<>();
+	private Set<Long> owners = new HashSet<>(); //TODO use a set
 	private List<Object> alreadyInit = new ArrayList<>();
 
 	/**
