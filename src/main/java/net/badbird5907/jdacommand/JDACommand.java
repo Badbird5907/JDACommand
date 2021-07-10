@@ -52,7 +52,7 @@ public class JDACommand {
 	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
 	 * @param prefix Bot prefix
 	 * @param jda Pass-through the {@link JDA} instance
-	 * @param owners {@link Long]} array of owners
+	 * @param owners {@link Long} array of owners
 	 */
 	public JDACommand(String prefix, JDA jda,Long[] owners) {
 		if (instance != null)
@@ -66,6 +66,7 @@ public class JDACommand {
 
 	/**
 	 * Get the {@link JDACommand instance.}
+	 * @return instance
 	 */
 	public static JDACommand getInstance() {
 		return instance;
@@ -132,8 +133,8 @@ public class JDACommand {
 
 	/**
 	 * Add a owner
-	 * See {@link JDACommand#isOwner(User)} and {@link JDACommand#getOwners()}
-	 * @param l
+	 * See {@link JDACommand#isOwner(User)}
+	 * @param l owner id
 	 */
 	public void addOwner(long l){
 		owners.add(l);
@@ -141,7 +142,7 @@ public class JDACommand {
 
 	/**
 	 * Returns if a {@link User} is defined as a owner. See {@link JDACommand#addOwner(long)}
-	 * @param user
+	 * @param user user
 	 * @return true - if the user is a owner | false - if the user is not a owner.
 	 */
 	public boolean isOwner(User user){

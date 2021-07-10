@@ -1,5 +1,28 @@
 package net.badbird5907.jdacommand;
 
 public enum CommandType {
-    FUN,TEST,MODERATION, SERVER_MANAGEMENT,MUSIC,UTIL
+    /**
+     * fun
+     */
+    FUN,
+    /**
+     * test
+     */
+    TEST,
+    /**
+     * moderation
+     */
+    MODERATION,
+    /**
+     * server management
+     */
+    SERVER_MANAGEMENT,
+    /**
+     * music
+     */
+    MUSIC,
+    /**
+     * utility
+     */
+    UTIL
 }
