@@ -35,14 +35,28 @@ public class JDACommand {
 	private List<Long> owners = new ArrayList<>();
 	private List<Object> alreadyInit = new ArrayList<>();
 
+	/**
+	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
+	 * @param prefix Bot prefix
+	 * @param jda Pass-through the {@link JDA} instance
+	 */
 	public JDACommand(String prefix, JDA jda) {
+		if (instance != null)
+			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");
 		this.prefix = prefix;
 		this.jda = jda;
 		init();
 	}
 
+	/**
+	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
+	 * @param prefix Bot prefix
+	 * @param jda Pass-through the {@link JDA} instance
+	 * @param owners {@link Long]} array of owners
+	 */
 	public JDACommand(String prefix, JDA jda,Long[] owners) {
-		this.prefix = prefix;
+		if (instance != null)
+			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");this.prefix = prefix;
 		this.jda = jda;
 		for (Long owner : owners) {
 			this.owners.add(owner);
@@ -50,21 +64,32 @@ public class JDACommand {
 		init();
 	}
 
+	/**
+	 * Get the {@link JDACommand instance.}
+	 */
 	public static JDACommand getInstance() {
 		return instance;
 	}
 
-	public void init() {
+	private void init() {
 		instance = this;
 		jda.addEventListener(new MessageListener());
 	}
 
-	public void debugPrintCommands() {
+	/**
+	 * print all registered commands to console (for debug purposes).
+	 */
+	public void printAllRegisteredCommands() {
 		commandMap.forEach((name,pair)->{
 			out.println("Command: Name: " + name + " Annotation:" + pair.getValue0() + " Method: " + pair.getValue1());
 		});
 	}
 
+	/**
+	 * Register a command
+	 * Example: registerCommand(MyCommand.class);
+	 * @param o Class
+	 */
 	public void registerCommand(Object o) {
 		if (alreadyInit.contains(o)) {
 			return;
@@ -86,6 +111,11 @@ public class JDACommand {
 			}
 		}
 	}
+
+	/**
+	 * Register all commands in a package, <b>also affects sub-packages</b>
+	 * @param p Package name, eg: my.package.commands
+	 */
 	@SneakyThrows
 	public void registerCommandsInPackage(String p){
 		Reflections reflections = new Reflections(p);
@@ -99,9 +129,21 @@ public class JDACommand {
 			return;
 		commandMap.put(name.toLowerCase(),new Triplet<>(command,method, o));
 	}
+
+	/**
+	 * Add a owner
+	 * See {@link JDACommand#isOwner(User)} and {@link JDACommand#getOwners()}
+	 * @param l
+	 */
 	public void addOwner(long l){
 		owners.add(l);
 	}
+
+	/**
+	 * Returns if a {@link User} is defined as a owner. See {@link JDACommand#addOwner(long)}
+	 * @param user
+	 * @return true - if the user is a owner | false - if the user is not a owner.
+	 */
 	public boolean isOwner(User user){
 		return owners.contains(user.getIdLong());
 	}

@@ -53,7 +53,7 @@ public class MessageListener extends ListenerAdapter {
 						Permission[] permissions = c.permission();
 						if (!e.getMember().getPermissions().contains(permissions[0]))
 							return;
-					}
+					}else return;
 				}
 				CommandManager.process(pair.getValue1(),fargs,e,JDACommand.getCommandMap().get(name.toLowerCase()).getValue2());
 			}
