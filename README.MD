@@ -28,7 +28,7 @@ dependencies{
 |---|---|
 |  Main Wiki Page  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki)  |
 |  Getting Started  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki/Getting-Started)  |
-|  More Info About the @Command Annotation  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki/Getting-Started)  |
+|  More Info About the @Command Annotation  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki/The-@Command-Annotation---In-Depth)  |
 
 
 # Usage:
