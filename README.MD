@@ -14,13 +14,13 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>1.4.0-REL</version>
+    <version>2.0.0-REL</version>
 </dependency>
 ```
 Or alternatively, if you use gradle:
 ```groovy
 dependencies{
-    implementation 'net.badbird5907:JDACommand:1.4.0-REL'
+    implementation 'net.badbird5907:JDACommand:2.0.0-REL'
 }
 ```
 # Wiki
@@ -35,32 +35,6 @@ dependencies{
 
 ## Code Examples:
 
-```java
-import net.badbird5907.jdacommand.Command;
-import net.badbird5907.jdacommand.CommandBase;
-import net.badbird5907.jdacommand.JDACommand;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
-
-public class YourClass {
-    public static void main(String[] args) {
-        JDA jda = new JDABuilder.create("token").build;
-        JDACommand command = new JDACommand("prefix", jda);
-        command.registerCommand(new YourCommandClass());
-    }
-}
-
-public class YourCommandClass extends CommandBase {
-    @Command(name = "hello",description = "Responds with \"Hello World!\"")
-    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
-        channel.sendMessage("Hello World!").queue();
-    }
-}
-```
-### OR:
-
-You can do this:
 ```java
 import net.badbird5907.jdacommand.Command;
 import net.badbird5907.jdacommand.CommandBase;
@@ -94,6 +68,32 @@ public class YourCommandClass2 extends CommandBase {
     @Command(name = "hello2",description = "Responds with \"Hello World!\"")
     protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (2)").queue();
+    }
+}
+```
+### OR:
+
+You can do this:
+```java
+import net.badbird5907.jdacommand.Command;
+import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.JDACommand;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+
+public class YourClass {
+    public static void main(String[] args) {
+        JDA jda = new JDABuilder.create("token").build;
+        JDACommand command = new JDACommand("prefix", jda);
+        command.registerCommand(new YourCommandClass());
+    }
+}
+
+public class YourCommandClass extends CommandBase {
+    @Command(name = "hello",description = "Responds with \"Hello World!\"")
+    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+        channel.sendMessage("Hello World!").queue();
     }
 }
 ```
