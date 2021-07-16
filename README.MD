@@ -22,7 +22,7 @@ The library is hosted on the maven central repo so just simply add this:
 ```
 Or alternatively, if you use gradle:
 ```groovy
-dependencies{
+dependencies {
     implementation 'net.badbird5907:JDACommand:2.0.0-REL'
 }
 ```
@@ -56,17 +56,19 @@ public class YourClass {
 
 //in package your.package.commands
 public class YourCommandClass extends CommandBase {
-    @Command(name = "hello",description = "Responds with \"Hello World!\"")
+    @Command(name = "hello", description = "Responds with \"Hello World!\"")
     protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
     }
 }
+
 public class YourCommandClass1 extends CommandBase {
-    @Command(name = "hello1",description = "Responds with \"Hello World!\"")
+    @Command(name = "hello1", description = "Responds with \"Hello World!\"")
     protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (1)").queue();
     }
 }
+
 public class YourCommandClass2 extends CommandBase {
     @Command(name = "hello2",description = "Responds with \"Hello World!\"")
     protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
@@ -94,7 +96,7 @@ public class YourClass {
 }
 
 public class YourCommandClass extends CommandBase {
-    @Command(name = "hello",description = "Responds with \"Hello World!\"")
+    @Command(name = "hello", description = "Responds with \"Hello World!\"")
     protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
     }
@@ -105,20 +107,20 @@ public class YourCommandClass extends CommandBase {
 # License
 GNU General Public License
 ```
-    Copyright (C) 2021  Badbird-5907
+Copyright (C) 2021  Badbird-5907
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 tl;dr: You can use this code as you wish.
-Also see [this](https://github.com/Badbird-5907/JDACommand/blob/master/license.md)
+Also see [this](/blob/master/license.md)
