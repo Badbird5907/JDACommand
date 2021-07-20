@@ -27,6 +27,6 @@ public class CommandEvent {
 		this.member = event.getMember();
 	}
 	public void acknowledgeMessage(){
-		getMessage().addReaction("✅").queue();
+		getMessage().addReaction("\u2705").queue();
 	}
 }
