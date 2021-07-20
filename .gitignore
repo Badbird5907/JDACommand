@@ -1,3 +1,5 @@
+JDACommand.iml
+
 # User-specific stuff
 .idea/
 
@@ -111,5 +113,3 @@ buildNumber.properties
 
 # Common working directory
 run/
-JDACommand.iml
-JDACommand.iml
