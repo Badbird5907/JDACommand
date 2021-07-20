@@ -2,22 +2,17 @@ package net.badbird5907.jdacommand;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.badbird5907.jdacommand.util.object.Triplet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
-import org.javatuples.Triplet;
 import org.reflections.Reflections;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static java.lang.System.out;
 
