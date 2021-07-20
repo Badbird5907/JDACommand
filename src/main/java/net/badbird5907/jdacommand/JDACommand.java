@@ -24,7 +24,6 @@ import static java.lang.System.out;
 public class JDACommand {
 	@Getter
 	private static Map<String, Triplet<Command, Method,Object>> commandMap = new ConcurrentHashMap<>();
-	@Getter
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
@@ -55,9 +54,7 @@ public class JDACommand {
 		if (instance != null)
 			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");this.prefix = prefix;
 		this.jda = jda;
-		for (Long owner : owners) {
-			this.owners.add(owner);
-		}
+		Collections.addAll(this.owners, owners);
 		init();
 	}
 
@@ -78,9 +75,7 @@ public class JDACommand {
 	 * print all registered commands to console (for debug purposes).
 	 */
 	public void printAllRegisteredCommands() {
-		commandMap.forEach((name,pair)->{
-			out.println("Command: Name: " + name + " Annotation:" + pair.getValue0() + " Method: " + pair.getValue1());
-		});
+		commandMap.forEach((name,pair)-> out.println("Command: Name: " + name + " Annotation:" + pair.getValue0() + " Method: " + pair.getValue1()));
 	}
 
 	/**
