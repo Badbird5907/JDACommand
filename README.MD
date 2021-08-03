@@ -9,7 +9,7 @@ A simple JDA command library, still a WIP
 # Building
 1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
 2. Open the folder "JDACommand" in cmd
-3. Run `mvn clean package` (https://maven.apache.org/)
+3. Run `mvn clean install` (https://maven.apache.org/)
 
 # Dependency
 The library is hosted on the maven central repo so just simply add this:
