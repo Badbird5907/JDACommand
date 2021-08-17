@@ -23,7 +23,7 @@ public class JDACommand {
 	public String prefix;
 	public JDA jda;
 	@Getter
-	private Set<Long> owners = new HashSet<>(); //TODO use a set
+	private Set<Long> owners = new HashSet<>();
 	private List<Object> alreadyInit = new ArrayList<>();
 
 	/**
