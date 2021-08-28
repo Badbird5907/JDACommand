@@ -41,6 +41,7 @@ dependencies {
 ```java
 import net.badbird5907.jdacommand.Command;
 import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -57,31 +58,36 @@ public class YourClass {
 //in package your.package.commands
 public class YourCommandClass extends CommandBase {
     @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
+        return CommandResult.SUCCESS;
     }
 }
 
 public class YourCommandClass1 extends CommandBase {
     @Command(name = "hello1", description = "Responds with \"Hello World!\"")
-    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (1)").queue();
+        return CommandResult.SUCCESS;
     }
 }
 
 public class YourCommandClass2 extends CommandBase {
-    @Command(name = "hello2",description = "Responds with \"Hello World!\"")
-    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    @Command(name = "hello2", description = "Responds with \"Hello World!\"")
+    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (2)").queue();
+        return CommandResult.SUCCESS;
     }
 }
 ```
 ### OR:
 
 You can do this:
+
 ```java
 import net.badbird5907.jdacommand.Command;
 import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -97,8 +103,9 @@ public class YourClass {
 
 public class YourCommandClass extends CommandBase {
     @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    protected void execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
+        return CommandResult.SUCCESS;
     }
 }
 ```
