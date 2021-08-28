@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import net.badbird5907.jdacommand.util.object.Triplet;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -19,6 +16,8 @@ import static java.lang.System.out;
 public class JDACommand {
 	@Getter
 	private static Map<String, Triplet<Command, Method,Object>> commandMap = new ConcurrentHashMap<>();
+	@Getter
+	private static Map<CommandResult,Object> overrideCommandResult = new ConcurrentHashMap<>();
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
@@ -51,6 +50,43 @@ public class JDACommand {
 		this.jda = jda;
 		Collections.addAll(this.owners, owners);
 		init();
+	}
+
+	/**
+	 * override the message sent for every {@link CommandResult}
+	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
+	 * you can override the message and send a string, or an {@link MessageEmbed}
+	 * @param commandResult
+	 * @param message
+	 * @return
+	 */
+	public JDACommand overrideCommandResultMessage(CommandResult commandResult,String message){
+		overrideCommandResult.remove(commandResult);
+		overrideCommandResult.put(commandResult,message);
+		return this;
+	}
+	/**
+	 * override the message sent for every {@link CommandResult}
+	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
+	 * you can override the message and send a string, or an {@link MessageEmbed}
+	 * @param commandResult
+	 * @param message
+	 * @return
+	 */
+	public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message){
+		overrideCommandResult.remove(commandResult);
+		overrideCommandResult.put(commandResult,message);
+		return this;
+	}
+
+	/**
+	 * unset a command result override {@link JDACommand#overrideCommandResultMessage)}
+	 * @param commandResult
+	 * @return
+	 */
+	public JDACommand unsetCommandResultOverride(CommandResult commandResult){
+		overrideCommandResult.remove(commandResult);
+		return this;
 	}
 
 	/**

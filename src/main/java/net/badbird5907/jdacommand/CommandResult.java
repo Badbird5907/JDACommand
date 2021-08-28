@@ -1,6 +1,7 @@
 package net.badbird5907.jdacommand;
 
 import lombok.Getter;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Getter
 public enum CommandResult {
@@ -11,5 +12,5 @@ public enum CommandResult {
     CommandResult(String message){
         this.message =  message;
     }
-    private String message;
+    private String message = null;
 }
