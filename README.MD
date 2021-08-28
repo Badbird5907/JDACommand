@@ -58,7 +58,7 @@ public class YourClass {
 //in package your.package.commands
 public class YourCommandClass extends CommandBase {
     @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
         return CommandResult.SUCCESS;
     }
@@ -66,7 +66,7 @@ public class YourCommandClass extends CommandBase {
 
 public class YourCommandClass1 extends CommandBase {
     @Command(name = "hello1", description = "Responds with \"Hello World!\"")
-    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (1)").queue();
         return CommandResult.SUCCESS;
     }
@@ -74,7 +74,7 @@ public class YourCommandClass1 extends CommandBase {
 
 public class YourCommandClass2 extends CommandBase {
     @Command(name = "hello2", description = "Responds with \"Hello World!\"")
-    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World! (2)").queue();
         return CommandResult.SUCCESS;
     }
@@ -103,7 +103,7 @@ public class YourClass {
 
 public class YourCommandClass extends CommandBase {
     @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    protected CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
         return CommandResult.SUCCESS;
     }
