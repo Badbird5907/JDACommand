@@ -10,7 +10,7 @@ public class CommandManager {
         try {
             CommandResult result = (CommandResult) cmd.invoke(o,args, new CommandEvent(args, e),e.getAuthor(),e.getMember(),e.getGuild(),e.getChannel());
             if((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null){
-                e.getChannel().sendMessage(result.getMessage());
+                e.getChannel().sendMessage(result.getMessage()).queue();
             }
         } catch (IllegalAccessException | InvocationTargetException illegalAccessException) {
             illegalAccessException.printStackTrace();
