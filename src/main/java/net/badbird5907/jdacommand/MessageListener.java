@@ -23,6 +23,7 @@ public class MessageListener extends ListenerAdapter {
 				continue;
 			}
 			finalArgs.add(s);
+
 		}
 		final String[] fargs = finalArgs.toArray(new String[0]);
 		final String command = e.getMessage().getContentRaw().replaceFirst("(?i)" + getInstance().prefix, "").toLowerCase().split(" ")[0];
@@ -32,10 +33,11 @@ public class MessageListener extends ListenerAdapter {
 				Command c = pair.getValue0();
 				if (c.disable())
 					return;
-				if (c.botOwnerOnly())
+				if (c.botOwnerOnly()) {
 					if (!JDACommand.getInstance().isOwner(e.getAuthor())) {
 						return;
 					}
+				}
 				if (c.serverOwnerOnly())
 					if (e.getChannelType() == ChannelType.CATEGORY && !e.getMember().isOwner())
 						return;
@@ -55,8 +57,9 @@ public class MessageListener extends ListenerAdapter {
 							return;
 					}else return;
 				}
-				CommandManager.process(pair.getValue1(),fargs,e,JDACommand.getCommandMap().get(name.toLowerCase()).getValue2());
+				CommandManager.process(pair.getValue1(),fargs,e,JDACommand.getCommandMap().get(name.toLowerCase()).getValue2(),c);
 			}
 		});
 	}
+	
 }

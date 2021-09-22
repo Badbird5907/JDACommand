@@ -1,5 +1,7 @@
 package net.badbird5907.jdacommand;
 
+import net.badbird5907.jdacommand.events.CommandPreProcessEvent;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -7,7 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CommandManager {
-    public static void process(Method cmd, String[] args, MessageReceivedEvent e, Object o){
+    public static void process(Method cmd, String[] args, MessageReceivedEvent e, Object o,Command command){
+        CommandPreProcessEvent event = new CommandPreProcessEvent(command.name(),args);
+        JDACommand.getEventBus().post(event);
+        if (event.isCancelled())
+            return;
         try {
             CommandResult result = (CommandResult) cmd.invoke(o,args, new CommandEvent(args, e),e.getAuthor(),e.getMember(),e.getGuild(),e.getChannel());
             if (JDACommand.getOverrideCommandResult().get(result) != null){

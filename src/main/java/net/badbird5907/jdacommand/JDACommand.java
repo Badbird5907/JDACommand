@@ -1,5 +1,6 @@
 package net.badbird5907.jdacommand;
 
+import com.google.common.eventbus.EventBus;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.badbird5907.jdacommand.util.object.Triplet;
@@ -21,6 +22,9 @@ public class JDACommand {
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
+	@Getter
+	private static EventBus eventBus = new EventBus();
+
 	@Getter
 	private Set<Long> owners = new HashSet<>();
 	private List<Object> alreadyInit = new ArrayList<>();
@@ -152,6 +156,9 @@ public class JDACommand {
 		if (command.disable())
 			return;
 		commandMap.put(name.toLowerCase(),new Triplet<>(command,method, o));
+		for (Guild guild : jda.getGuilds()) {
+			guild.upsertCommand(command.name(),command.description());
+		}
 	}
 
 	/**
