@@ -69,6 +69,10 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<failOnError>false</failOnError>
+					<failOnWarnings>false</failOnWarnings>
+				</configuration>
 			</plugin>
 			<!-- Sign artifacts for uploading to maven central -->
 			<plugin>
