@@ -39,19 +39,19 @@ public class MessageListener extends ListenerAdapter {
 					}
 				}
 				if (c.serverOwnerOnly())
-					if (e.getChannelType() == ChannelType.CATEGORY && !e.getMember().isOwner())
+					if (e.getChannelType() == ChannelType.TEXT && !e.getMember().isOwner())
 						return;
 				if (c.dmsOnly())
 					if (e.getChannelType() != ChannelType.PRIVATE)
 						return;
 				if (c.serverOnly())
-					if (e.getChannelType() != ChannelType.CATEGORY)
+					if (e.getChannelType() != ChannelType.TEXT)
 						return;
 				if (c.adminOnly())
-					if (e.getChannelType() == ChannelType.CATEGORY && !e.getMember().getPermissions().contains(Permission.ADMINISTRATOR))
+					if (e.getChannelType() == ChannelType.TEXT && !e.getMember().getPermissions().contains(Permission.ADMINISTRATOR))
 						return;
 				if (c.permission().length != 0){
-					if (e.getChannelType() == ChannelType.CATEGORY){
+					if (e.getChannelType() == ChannelType.TEXT){
 						Permission[] permissions = c.permission();
 						if (!e.getMember().getPermissions().contains(permissions[0]))
 							return;
