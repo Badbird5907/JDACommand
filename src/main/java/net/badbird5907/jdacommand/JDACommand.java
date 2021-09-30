@@ -156,9 +156,12 @@ public class JDACommand {
 		if (command.disable())
 			return;
 		commandMap.put(name.toLowerCase(),new Triplet<>(command,method, o));
+		/*
 		for (Guild guild : jda.getGuilds()) {
-			guild.upsertCommand(command.name(),command.description());
+			String desc = (command.description() == null ? "Default Description" : command.description());
+			guild.upsertCommand(command.name(),desc);
 		}
+		*/
 	}
 
 	/**
