@@ -2,7 +2,13 @@ package net.badbird5907.jdacommand;
 
 import com.google.common.eventbus.EventBus;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
+import net.badbird5907.jdacommand.events.CommandEvent;
+import net.badbird5907.jdacommand.handler.MessageHandler;
+import net.badbird5907.jdacommand.handler.MessageListener;
+import net.badbird5907.jdacommand.handler.SimpleMessageHandler;
+import net.badbird5907.jdacommand.util.Cooldown;
 import net.badbird5907.jdacommand.util.object.Triplet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -18,6 +24,7 @@ public class JDACommand {
 	@Getter
 	private static Map<String, Triplet<Command, Method,Object>> commandMap = new ConcurrentHashMap<>();
 	@Getter
+	@Deprecated
 	private static Map<CommandResult,Object> overrideCommandResult = new ConcurrentHashMap<>();
 	private static JDACommand instance;
 	public String prefix;
@@ -28,6 +35,10 @@ public class JDACommand {
 	@Getter
 	private Set<Long> owners = new HashSet<>();
 	private List<Object> alreadyInit = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private MessageHandler messageHandler = new SimpleMessageHandler();
 
 	/**
 	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
@@ -57,6 +68,8 @@ public class JDACommand {
 	}
 
 	/**
+	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
+	 *
 	 * override the message sent for every {@link CommandResult}
 	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
 	 * you can override the message and send a string, or an {@link MessageEmbed}
@@ -64,12 +77,14 @@ public class JDACommand {
 	 * @param message
 	 * @return
 	 */
+	@Deprecated
 	public JDACommand overrideCommandResultMessage(CommandResult commandResult,String message){
 		overrideCommandResult.remove(commandResult);
 		overrideCommandResult.put(commandResult,message);
 		return this;
 	}
 	/**
+	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
 	 * override the message sent for every {@link CommandResult}
 	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
 	 * you can override the message and send a string, or an {@link MessageEmbed}
@@ -77,6 +92,7 @@ public class JDACommand {
 	 * @param message
 	 * @return
 	 */
+	@Deprecated
 	public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message){
 		overrideCommandResult.remove(commandResult);
 		overrideCommandResult.put(commandResult,message);
@@ -84,10 +100,12 @@ public class JDACommand {
 	}
 
 	/**
+	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
 	 * unset a command result override {@link JDACommand#overrideCommandResultMessage)}
 	 * @param commandResult
 	 * @return
 	 */
+	@Deprecated
 	public JDACommand unsetCommandResultOverride(CommandResult commandResult){
 		overrideCommandResult.remove(commandResult);
 		return this;
@@ -126,11 +144,15 @@ public class JDACommand {
 			if (m.getAnnotation(Command.class) != null && m.getReturnType() == CommandResult.class) {
 				Command command = m.getAnnotation(Command.class);
 				//String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel
-				if (m.getParameterTypes().length != 6 && m.getParameterTypes()[0] != String[].class || m.getParameterTypes()[1] != CommandEvent.class || m.getParameterTypes()[2] != User.class
+				if (m.getParameterTypes().length != 6 && m.getParameterTypes()[0] != String[].class || m.getParameterTypes()[1] != CommandEvent.class
+						|| m.getParameterTypes()[2] != User.class
 				|| m.getParameterTypes()[3] != Member.class	|| m.getParameterTypes()[4] != Guild.class || m.getParameterTypes()[5] != MessageChannel.class) {
 					throw new IllegalArgumentException("Invalid method arguments for " + m.getName());
 				}
 				registerCommand(command, command.name(), m, o);
+				if (command.cooldown() > 0){
+					Cooldown.createCooldown(command.name().toLowerCase());
+				}
 				for (String alias : command.aliases()) {
 					registerCommand(command, alias, m, o);
 				}

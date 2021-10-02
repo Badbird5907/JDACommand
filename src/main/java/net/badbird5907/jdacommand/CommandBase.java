@@ -1,5 +1,6 @@
 package net.badbird5907.jdacommand;
 
+import net.badbird5907.jdacommand.events.CommandEvent;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;

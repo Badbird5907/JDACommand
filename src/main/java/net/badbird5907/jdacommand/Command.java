@@ -101,4 +101,5 @@ public @interface Command {
      * @return
      */
     CommandType commandType() default CommandType.UTIL;
+    int cooldown() default 0;
 }

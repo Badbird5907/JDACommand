@@ -1,4 +1,4 @@
-package net.badbird5907.jdacommand;
+package net.badbird5907.jdacommand.events;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -5,11 +5,7 @@
 
 JavaDocs: [here](https://www.javadoc.io/doc/net.badbird5907/JDACommand/latest/index.html)
 
-A simple JDA command library, still a WIP
-# Building
-1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
-2. Open the folder "JDACommand" in cmd
-3. Run `mvn clean install` (https://maven.apache.org/)
+A simple JDA command library
 
 # Dependency
 The library is hosted on the maven central repo so just simply add this:
@@ -17,15 +13,21 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>2.0.0-REL</version>
+    <version>3.0.0-REL</version>
 </dependency>
 ```
 Or alternatively, if you use gradle:
 ```groovy
 dependencies {
-    implementation 'net.badbird5907:JDACommand:2.0.0-REL'
+    implementation 'net.badbird5907:JDACommand:3.0.0-REL'
 }
 ```
+
+# Building
+1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
+2. Open the folder "JDACommand" in cmd
+3. Run `mvn clean install` (https://maven.apache.org/)
+
 # Wiki
 |  Name  |  Link  |
 |---|---|
@@ -62,6 +64,12 @@ public class YourCommandClass extends CommandBase {
         channel.sendMessage("Hello World!").queue();
         return CommandResult.SUCCESS;
     }
+    //you can also have multiple command handlers in one class!
+    @Command(name = "cooldown",description = "Demonstration on how the cooldown works!",cooldown = 10) //cooldown of 10 seconds
+    public CommandResult executeCooldown(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
+        channel.sendMessage("Hello World!").queue();
+        return CommandResult.SUCCESS;
+    }
 }
 
 public class YourCommandClass1 extends CommandBase {
@@ -89,6 +97,7 @@ import net.badbird5907.jdacommand.Command;
 import net.badbird5907.jdacommand.CommandBase;
 import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
+import net.badbird5907.jdacommand.CommandType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -102,7 +111,7 @@ public class YourClass {
 }
 
 public class YourCommandClass extends CommandBase {
-    @Command(name = "hello", description = "Responds with \"Hello World!\"")
+    @Command(name = "hello", description = "Responds with \"Hello World!\"",commandType = CommandType.FUN)
     public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
         return CommandResult.SUCCESS;
