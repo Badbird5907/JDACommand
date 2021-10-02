@@ -17,16 +17,6 @@ public class CommandManager {
             CommandResult result = (CommandResult) cmd.invoke(o,args, new CommandEvent(args, e),e.getAuthor(),e.getMember(),e.getGuild(),e.getChannel());
             if (result == null)
                 result = CommandResult.SUCCESS;
-            if (JDACommand.getOverrideCommandResult().get(result) != null){
-                Object obj = JDACommand.getOverrideCommandResult().get(result);
-                if (obj instanceof String){
-                    e.getChannel().sendMessage(String.valueOf(obj)).queue();
-                }else{
-                    e.getChannel().sendMessage((MessageEmbed) obj).queue();
-                }
-            }else if((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null){
-                e.getChannel().sendMessage(result.getMessage()).queue();
-            }
             switch (result){
                 case SUCCESS:
                     handle(JDACommand.getInstance().getMessageHandler().successCommandResult(e.getAuthor(),command),e.getMessage());

@@ -23,9 +23,7 @@ import static java.lang.System.out;
 public class JDACommand {
 	@Getter
 	private static Map<String, Triplet<Command, Method,Object>> commandMap = new ConcurrentHashMap<>();
-	@Getter
-	@Deprecated
-	private static Map<CommandResult,Object> overrideCommandResult = new ConcurrentHashMap<>();
+
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
@@ -65,50 +63,6 @@ public class JDACommand {
 		this.jda = jda;
 		Collections.addAll(this.owners, owners);
 		init();
-	}
-
-	/**
-	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
-	 *
-	 * override the message sent for every {@link CommandResult}
-	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
-	 * you can override the message and send a string, or an {@link MessageEmbed}
-	 * @param commandResult
-	 * @param message
-	 * @return
-	 */
-	@Deprecated
-	public JDACommand overrideCommandResultMessage(CommandResult commandResult,String message){
-		overrideCommandResult.remove(commandResult);
-		overrideCommandResult.put(commandResult,message);
-		return this;
-	}
-	/**
-	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
-	 * override the message sent for every {@link CommandResult}
-	 * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
-	 * you can override the message and send a string, or an {@link MessageEmbed}
-	 * @param commandResult
-	 * @param message
-	 * @return
-	 */
-	@Deprecated
-	public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message){
-		overrideCommandResult.remove(commandResult);
-		overrideCommandResult.put(commandResult,message);
-		return this;
-	}
-
-	/**
-	 * <b>Use the new {@link MessageHandler} or {@link SimpleMessageHandler}</b>
-	 * unset a command result override {@link JDACommand#overrideCommandResultMessage)}
-	 * @param commandResult
-	 * @return
-	 */
-	@Deprecated
-	public JDACommand unsetCommandResultOverride(CommandResult commandResult){
-		overrideCommandResult.remove(commandResult);
-		return this;
 	}
 
 	/**
