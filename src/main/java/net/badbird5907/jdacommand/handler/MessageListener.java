@@ -75,7 +75,7 @@ public class MessageListener extends ListenerAdapter {
 					if (e.getChannelType() == ChannelType.TEXT){
 						Permission[] permissions = c.permission();
 						if (!e.getMember().getPermissions().contains(permissions[0])) {
-							handle(JDACommand.getInstance().getMessageHandler().permissionMessage(author,c),e.getMessage());
+							handle(JDACommand.getInstance().getMessageHandler().noPermsCommandResult(author,c),e.getMessage());
 							return;
 						}
 					}else return;

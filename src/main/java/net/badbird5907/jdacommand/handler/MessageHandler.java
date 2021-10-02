@@ -9,8 +9,6 @@ public interface MessageHandler {
 
     Object dmsOnlyMessage(User author, Command command);
 
-    Object permissionMessage(User author, Command command);
-
     Object serverOnly(User author, Command command);
 
     Object adminOnly(User author, Command command);

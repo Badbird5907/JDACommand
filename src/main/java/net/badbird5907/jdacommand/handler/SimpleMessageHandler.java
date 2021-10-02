@@ -13,12 +13,6 @@ public class SimpleMessageHandler implements MessageHandler {
     public Object dmsOnlyMessage(User author, Command command) {
         return null;
     }
-
-    @Override
-    public Object permissionMessage(User author, Command command) {
-        return null;
-    }
-
     @Override
     public Object serverOnly(User author, Command command) {
         return null;
