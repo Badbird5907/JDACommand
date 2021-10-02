@@ -5,24 +5,22 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 public interface MessageHandler {
-    Message cooldownMessage(User author, Command command);
+    Object cooldownMessage(User author, Command command);
 
-    Message dmsOnlyMessage(User author, Command command);
+    Object dmsOnlyMessage(User author, Command command);
 
-    Message permissionMessage(User author, Command command);
+    Object permissionMessage(User author, Command command);
 
-    Message serverOnly(User author, Command command);
+    Object serverOnly(User author, Command command);
 
-    Message adminOnly(User author, Command command);
+    Object adminOnly(User author, Command command);
 
-    Message serverOnlyMessage(User author, Command command);
+    Object botOwnerOnlyMessage(User author, Command command);
 
-    Message botOwnerOnlyMessage(User author, Command command);
+    Object serverOwnerOnlyMessage(User author, Command command);
 
-    Message serverOwnerOnlyMessage(User author, Command command);
-
-    Message errorCommandResult(User author,Command command);
-    Message successCommandResult(User author,Command command);
-    Message noPermsCommandResult(User author,Command command);
-    Message otherCommandResult(User author,Command command);
+    Object errorCommandResult(User author,Command command);
+    Object successCommandResult(User author,Command command);
+    Object noPermsCommandResult(User author,Command command);
+    Object otherCommandResult(User author,Command command);
 }

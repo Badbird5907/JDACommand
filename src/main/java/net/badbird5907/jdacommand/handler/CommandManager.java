@@ -35,9 +35,14 @@ public class CommandManager {
             illegalAccessException.printStackTrace();
         }
     }
-    private static void handle(Message message, Message command){
+    private static void handle(Object message, Message command){
         if (message == null)
             return;
-        command.reply(message).queue();
+        if (message instanceof MessageEmbed)
+            command.reply((MessageEmbed) message).queue();
+        else if (message instanceof Message)
+            command.reply((Message) message).queue();
+        else if (message instanceof String)
+            command.reply((String) message).queue();
     }
 }

@@ -1,67 +1,61 @@
 package net.badbird5907.jdacommand.handler;
 
 import net.badbird5907.jdacommand.Command;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 public class SimpleMessageHandler implements MessageHandler {
     @Override
-    public Message cooldownMessage(User author, Command command) {
+    public Object cooldownMessage(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message dmsOnlyMessage(User author, Command command) {
+    public Object dmsOnlyMessage(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message permissionMessage(User author, Command command) {
+    public Object permissionMessage(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message serverOnly(User author, Command command) {
+    public Object serverOnly(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message adminOnly(User author, Command command) {
+    public Object adminOnly(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message serverOnlyMessage(User author, Command command) {
+    public Object botOwnerOnlyMessage(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message botOwnerOnlyMessage(User author, Command command) {
+    public Object serverOwnerOnlyMessage(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message serverOwnerOnlyMessage(User author, Command command) {
+    public Object errorCommandResult(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message errorCommandResult(User author, Command command) {
+    public Object successCommandResult(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message successCommandResult(User author, Command command) {
+    public Object noPermsCommandResult(User author, Command command) {
         return null;
     }
 
     @Override
-    public Message noPermsCommandResult(User author, Command command) {
-        return null;
-    }
-
-    @Override
-    public Message otherCommandResult(User author, Command command) {
+    public Object otherCommandResult(User author, Command command) {
         return null;
     }
 }

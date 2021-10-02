@@ -7,6 +7,7 @@ import net.badbird5907.jdacommand.util.Cooldown;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -62,7 +63,7 @@ public class MessageListener extends ListenerAdapter {
 					}
 				if (c.serverOnly() || c.permission().length != 0)
 					if (e.getChannelType() != ChannelType.TEXT) {
-						handle(JDACommand.getInstance().getMessageHandler().serverOnlyMessage(author,c),e.getMessage());
+						handle(JDACommand.getInstance().getMessageHandler().serverOnly(author,c),e.getMessage());
 						return;
 					}
 				if (c.adminOnly())
@@ -90,10 +91,15 @@ public class MessageListener extends ListenerAdapter {
 			}
 		});
 	}
-	private static void handle(Message message,Message command){
+	private static void handle(Object message, Message command){
 		if (message == null)
 			return;
-		command.reply(message).queue();
+		if (message instanceof MessageEmbed)
+			command.reply((MessageEmbed) message).queue();
+		else if (message instanceof Message)
+			command.reply((Message) message).queue();
+		else if (message instanceof String)
+			command.reply((String) message).queue();
 	}
 	
 }
