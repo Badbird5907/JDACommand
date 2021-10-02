@@ -57,7 +57,7 @@ public class JDACommand {
 	 * @param jda Pass-through the {@link JDA} instance
 	 * @param owners {@link Long} array of owners
 	 */
-	public JDACommand(String prefix, JDA jda,Long[] owners) {
+	public JDACommand(String prefix, JDA jda,Long... owners) {
 		if (instance != null)
 			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");this.prefix = prefix;
 		this.jda = jda;
