@@ -42,26 +42,16 @@ public class JDACommand {
 	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
 	 * @param prefix Bot prefix
 	 * @param jda Pass-through the {@link JDA} instance
-	 */
-	public JDACommand(String prefix, JDA jda) {
-		if (instance != null)
-			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");
-		this.prefix = prefix;
-		this.jda = jda;
-		init();
-	}
-
-	/**
-	 * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
-	 * @param prefix Bot prefix
-	 * @param jda Pass-through the {@link JDA} instance
 	 * @param owners {@link Long} array of owners
 	 */
 	public JDACommand(String prefix, JDA jda,Long... owners) {
 		if (instance != null)
-			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");this.prefix = prefix;
+			throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");
+		this.prefix = prefix;
 		this.jda = jda;
-		Collections.addAll(this.owners, owners);
+		if (owners != null && owners.length >= 1){
+			Collections.addAll(this.owners, owners);
+		}
 		init();
 	}
 
