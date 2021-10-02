@@ -21,4 +21,5 @@ public interface MessageHandler {
     Object successCommandResult(User author,Command command);
     Object noPermsCommandResult(User author,Command command);
     Object otherCommandResult(User author,Command command);
+    Object unknownCommand(User author,String command);
 }

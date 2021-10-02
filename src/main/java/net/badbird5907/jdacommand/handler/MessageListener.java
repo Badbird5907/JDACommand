@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.badbird5907.jdacommand.JDACommand.getInstance;
 
@@ -34,12 +35,13 @@ public class MessageListener extends ListenerAdapter {
 		}
 		final String[] fargs = finalArgs.toArray(new String[0]);
 		final String command = e.getMessage().getContentRaw().replaceFirst("(?i)" + getInstance().prefix, "").toLowerCase().split(" ")[0];
-
+		AtomicBoolean found = new AtomicBoolean(false);
 		JDACommand.getCommandMap().forEach((name, pair)->{
 			if (command.equalsIgnoreCase(name)){ //TODO custom error messages
 				Command c = pair.getValue0();
 				if (c.disable())
 					return;
+				found.set(true);
 				CommandPreProcessEvent event = new CommandPreProcessEvent(c.name(),fargs);
 				JDACommand.getEventBus().post(event);
 				if (event.isCancelled())
@@ -90,6 +92,9 @@ public class MessageListener extends ListenerAdapter {
 				CommandManager.process(pair.getValue1(),fargs,e,JDACommand.getCommandMap().get(name.toLowerCase()).getValue2(),c);
 			}
 		});
+		if (!found.get()){
+			handle(JDACommand.getInstance().getMessageHandler().unknownCommand(e.getAuthor(),command),e.getMessage());
+		}
 	}
 	private static void handle(Object message, Message command){
 		if (message == null)

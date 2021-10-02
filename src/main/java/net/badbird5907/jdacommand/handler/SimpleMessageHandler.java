@@ -52,4 +52,9 @@ public class SimpleMessageHandler implements MessageHandler {
     public Object otherCommandResult(User author, Command command) {
         return null;
     }
+
+    @Override
+    public Object unknownCommand(User author, String command) {
+        return null;
+    }
 }
