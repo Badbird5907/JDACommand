@@ -59,6 +59,11 @@ public class YourClass {
 
 //in package your.package.commands
 public class YourCommandClass extends CommandBase {
+    public YourCommandClass(){
+        super(); //NOTE - If you want to add a custom constructor, there are some limitations:
+                 // You need to call super(); or else JDACommand#registerCommandsInPackage will not work.
+                 // There can also not be any method params.
+    }
     @Command(name = "hello", description = "Responds with \"Hello World!\"")
     public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
         channel.sendMessage("Hello World!").queue();
