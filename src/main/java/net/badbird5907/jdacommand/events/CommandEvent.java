@@ -26,6 +26,15 @@ public class CommandEvent {
 		this.author = event.getAuthor();
 		this.member = event.getMember();
 	}
+	public void reply(Message message){
+		event.getMessage().reply(message).queue();
+	}
+	public void reply(MessageEmbed message){
+		event.getMessage().reply(message).queue();
+	}
+	public void reply(String message){
+		event.getMessage().reply(message).queue();
+	}
 	public void acknowledgeMessage(){
 		getMessage().addReaction("\u2705").queue();
 	}

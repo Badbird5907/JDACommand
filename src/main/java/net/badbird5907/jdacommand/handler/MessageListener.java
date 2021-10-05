@@ -47,13 +47,14 @@ public class MessageListener extends ListenerAdapter {
 				if (event.isCancelled())
 					return;
 				User author = e.getAuthor();
+				boolean owner = JDACommand.getInstance().isOwner(e.getAuthor());
 				if (c.botOwnerOnly()) {
-					if (!JDACommand.getInstance().isOwner(e.getAuthor())) {
+					if (!owner) {
 						handle(JDACommand.getInstance().getMessageHandler().botOwnerOnlyMessage(author,c),e.getMessage());
 						return;
 					}
 				}
-				if (c.serverOwnerOnly())
+				if (c.serverOwnerOnly() && !owner)
 					if (e.getChannelType() == ChannelType.TEXT && !e.getMember().isOwner()) {
 						handle(JDACommand.getInstance().getMessageHandler().serverOwnerOnlyMessage(author,c),e.getMessage());
 						return;
@@ -68,12 +69,12 @@ public class MessageListener extends ListenerAdapter {
 						handle(JDACommand.getInstance().getMessageHandler().serverOnly(author,c),e.getMessage());
 						return;
 					}
-				if (c.adminOnly())
+				if (c.adminOnly() && !owner)
 					if (e.getChannelType() == ChannelType.TEXT && !e.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
 						handle(JDACommand.getInstance().getMessageHandler().adminOnly(author,c),e.getMessage());
 						return;
 					}
-				if (c.permission().length != 0){
+				if (c.permission().length != 0 && !owner){
 					if (e.getChannelType() == ChannelType.TEXT){
 						Permission[] permissions = c.permission();
 						if (!e.getMember().getPermissions().contains(permissions[0])) {
@@ -82,7 +83,7 @@ public class MessageListener extends ListenerAdapter {
 						}
 					}else return;
 				}
-				if (c.cooldown() > 0){
+				if (c.cooldown() > 0 && !owner){
 					if (Cooldown.isOnCooldown(c.name().toLowerCase(),e.getAuthor().getIdLong())){
 						handle(JDACommand.getInstance().getMessageHandler().cooldownMessage(author,c),e.getMessage());
 						return;
