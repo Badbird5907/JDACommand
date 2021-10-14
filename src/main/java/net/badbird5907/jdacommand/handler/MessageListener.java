@@ -104,8 +104,7 @@ public class MessageListener extends ListenerAdapter {
 			command.reply((MessageEmbed) message).queue();
 		else if (message instanceof Message)
 			command.reply((Message) message).queue();
-		else if (message instanceof String)
-			command.reply((String) message).queue();
+		else command.reply(message.toString()).queue();
 	}
 	
 }

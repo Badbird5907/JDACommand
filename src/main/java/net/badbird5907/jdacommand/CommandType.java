@@ -24,5 +24,9 @@ public enum CommandType {
     /**
      * utility
      */
-    UTIL
+    UTIL,
+    /**
+     * Bot managment
+     */
+    BOT_MANAGEMENT
 }

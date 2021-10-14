@@ -101,6 +101,16 @@ public @interface Command {
      * @return
      */
     CommandType commandType() default CommandType.UTIL;
+
+    /**
+     * Weather the command is hidden or not. Purely for documentation and for help commands, no actual affect on the bot.
+     * @return
+     */
     boolean hidden() default false;
+
+    /**
+     * cooldown for the command (per user)
+     * @return
+     */
     int cooldown() default 0;
 }
