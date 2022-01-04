@@ -3,14 +3,25 @@ package net.badbird5907.jdacommand;
 import com.google.common.eventbus.EventBus;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.badbird5907.jdacommand.annotation.Arg;
+import net.badbird5907.jdacommand.annotation.Command;
+import net.badbird5907.jdacommand.annotation.Disable;
+import net.badbird5907.jdacommand.annotation.Sender;
+import net.badbird5907.jdacommand.provider.Provider;
+import net.badbird5907.jdacommand.util.object.CommandObj;
 import net.badbird5907.jdacommand.util.object.Triplet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.System.out;
 
@@ -19,6 +30,9 @@ public class JDACommand {
 	private static Map<String, Triplet<Command, Method,Object>> commandMap = new ConcurrentHashMap<>();
 	@Getter
 	private static Map<CommandResult,Object> overrideCommandResult = new ConcurrentHashMap<>();
+
+	private static List<Provider> providers = new CopyOnWriteArrayList<>();
+
 	private static JDACommand instance;
 	public String prefix;
 	public JDA jda;
@@ -147,15 +161,52 @@ public class JDACommand {
 	@SneakyThrows
 	public void registerCommandsInPackage(String p){
 		Reflections reflections = new Reflections(p);
-		Set<Class<? extends CommandBase>> classes = reflections.getSubTypesOf(CommandBase.class);
-		for (Class<? extends CommandBase> aClass : classes) {
-			aClass.getDeclaredConstructor().newInstance();
+		Set<Class<?>> classes = reflections.getSubTypesOf(Object.class);
+		for (Class<?> aClass : classes) {
+			if (aClass.isAnnotationPresent(Disable.class))
+				return;
+			Object instance = null;
+			for (Method method : aClass.getDeclaredMethods()) {
+				if (method.isAnnotationPresent(Command.class)) {
+					Command command = method.getAnnotation(Command.class);
+					if (command.name().equals("")) {
+						throw new IllegalArgumentException("Command name cannot be empty!");
+					}
+					if (Modifier.isPrivate(method.getModifiers()) || Modifier.isProtected(method.getModifiers())){
+						if (instance == null) {
+							instance = aClass.newInstance();
+						}
+					}
+					CommandObj commandObj = new CommandObj(command.name(), command, command.aliases(),instance);
+					registerCommand(command, command.name(), method, instance,commandObj);
+				}
+			}
 		}
 	}
-	private void registerCommand(Command command, String name,Method method,Object o) {
-		if (command.disable())
+	private void registerCommand(Command command, String name,Method method,Object o,CommandObj commandObj) {
+		if (command.disable() || method.isAnnotationPresent(Disable.class))
 			return;
+		if (commandMap.containsKey(name) || name.isEmpty()) {
+			return;
+		}
+
 		commandMap.put(name.toLowerCase(),new Triplet<>(command,method, o));
+		CommandCreateAction action = jda.upsertCommand(command.name(),command.description());
+		Parameter[] params = method.getParameters();
+		Map<Parameter, OptionType> options = new HashMap<>();
+		for (Parameter parameter : params) {
+			if (parameter.isAnnotationPresent(Arg.class) || parameter.isAnnotationPresent(Sender.class)) {
+				providers.stream().filter(provider ->{
+					//check if provider generic type is assignable from parameter type
+					return provider.getClass().getGenericInterfaces()[0].getTypeParameters()[0].getTypeName().equals(parameter.getType().getTypeName());
+				})
+			}
+		}
+
+		for (int i = 0; i < params.length; i++) {
+
+		}
+
 		/*
 		for (Guild guild : jda.getGuilds()) {
 			String desc = (command.description() == null ? "Default Description" : command.description());

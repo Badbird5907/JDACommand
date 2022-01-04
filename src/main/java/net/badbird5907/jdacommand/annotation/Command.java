@@ -1,5 +1,7 @@
-package net.badbird5907.jdacommand;
+package net.badbird5907.jdacommand.annotation;
 
+import net.badbird5907.jdacommand.CommandType;
+import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 

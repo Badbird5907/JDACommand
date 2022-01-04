@@ -1,5 +1,6 @@
 package net.badbird5907.jdacommand;
 
+import net.badbird5907.jdacommand.annotation.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

@@ -1,3 +1,5 @@
+# Don't use massive WIP
+
 # JDACommand
 [![Maven Central](https://img.shields.io/maven-central/v/net.badbird5907/JDACommand.svg?label=Maven%20Central&style=for-the-badge)](https://search.maven.org/search?q=g:%22net.badbird5907%22%20AND%20a:%22JDACommand%22)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBadbird-5907%2FJDACommand&count_bg=%236EFF00&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Views+%28as+of+21%2F05%2F06%29&edge_flat=true)](https://hits.seeyoufarm.com)
@@ -39,8 +41,7 @@ dependencies {
 ## Code Examples:
 
 ```java
-import net.badbird5907.jdacommand.Command;
-import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
@@ -85,8 +86,7 @@ public class YourCommandClass2 extends CommandBase {
 You can do this:
 
 ```java
-import net.badbird5907.jdacommand.Command;
-import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
