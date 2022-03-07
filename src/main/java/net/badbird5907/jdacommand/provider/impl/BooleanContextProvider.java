@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class BooleanContextProvider implements Provider<Boolean> {
     @Override
     public Boolean provide(CommandContext context, ParameterContext pContext) throws Exception {
-        Object o = context.getOrDefault(pContext.getName(),false);
+        Object o = context.getOrDefault(pContext.getName(), false);
         return o instanceof Boolean ? (Boolean) o : ((OptionMapping) o).getAsBoolean();
     }
 
@@ -22,5 +22,10 @@ public class BooleanContextProvider implements Provider<Boolean> {
     @Override
     public Class<?> getType() {
         return Boolean.class;
+    }
+
+    @Override
+    public Class<?>[] getExtraTypes() {
+        return new Class[]{boolean.class};
     }
 }

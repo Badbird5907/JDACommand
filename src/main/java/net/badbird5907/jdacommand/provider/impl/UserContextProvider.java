@@ -20,7 +20,7 @@ public class UserContextProvider implements Provider<User> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getName(),"User",paramContext.isRequired());
+        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getName(), "User", paramContext.isRequired());
     }
 
     @Override

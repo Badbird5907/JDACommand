@@ -27,9 +27,11 @@ public class ParameterContext {
         this.name = parameter.getName();
         this.required = parameter.isAnnotationPresent(Required.class);
     }
+
     public boolean hasAnnotation(Class<? extends Annotation> annotation) {
         return parameter.isAnnotationPresent(annotation);
     }
+
     public boolean isSender() {
         return (getParameterIndex() == 0 || hasAnnotation(Sender.class)) && !hasAnnotation(Arg.class);
     }

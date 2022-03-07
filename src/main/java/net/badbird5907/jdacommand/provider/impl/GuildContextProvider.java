@@ -4,11 +4,7 @@ import net.badbird5907.jdacommand.context.CommandContext;
 import net.badbird5907.jdacommand.context.ParameterContext;
 import net.badbird5907.jdacommand.provider.Provider;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
 
 public class GuildContextProvider implements Provider<Guild> {
     @Override

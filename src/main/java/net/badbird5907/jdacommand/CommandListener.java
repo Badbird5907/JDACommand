@@ -13,6 +13,7 @@ public class CommandListener extends ListenerAdapter {
         super();
         System.out.println("CommandListener loaded");
     }
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
         try {

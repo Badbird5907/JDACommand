@@ -28,22 +28,22 @@ import static java.lang.System.out;
 
 public class JDACommand {
     @Getter
-    private static Map<String, CommandWrapper> commandMap = new ConcurrentHashMap<>();
+    private static final Map<String, CommandWrapper> commandMap = new ConcurrentHashMap<>();
     @Getter
-    private static Map<CommandResult, Object> overrideCommandResult = new ConcurrentHashMap<>();
+    private static final Map<CommandResult, Object> overrideCommandResult = new ConcurrentHashMap<>();
 
-    private static List<Provider<?>> providers = new CopyOnWriteArrayList<>();
+    private static final List<Provider<?>> providers = new CopyOnWriteArrayList<>();
 
     @Getter
-    private static EventBus eventBus = new EventBus();
+    private static final EventBus eventBus = new EventBus();
 
     private static JDACommand instance;
     public String prefix;
     public JDA jda;
 
     @Getter
-    private Set<Long> owners = new HashSet<>();
-    private List<Object> alreadyInit = new ArrayList<>();
+    private final Set<Long> owners = new HashSet<>();
+    private final List<Object> alreadyInit = new ArrayList<>();
 
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
@@ -71,6 +71,15 @@ public class JDACommand {
         this.jda = jda;
         Collections.addAll(this.owners, owners);
         init();
+    }
+
+    /**
+     * Get the {@link JDACommand instance.}
+     *
+     * @return instance
+     */
+    public static JDACommand getInstance() {
+        return instance;
     }
 
     /**
@@ -112,15 +121,6 @@ public class JDACommand {
     public JDACommand unsetCommandResultOverride(CommandResult commandResult) {
         overrideCommandResult.remove(commandResult);
         return this;
-    }
-
-    /**
-     * Get the {@link JDACommand instance.}
-     *
-     * @return instance
-     */
-    public static JDACommand getInstance() {
-        return instance;
     }
 
     private void init() {
@@ -247,7 +247,7 @@ public class JDACommand {
     }
 
     private Provider<?> getProvider(Parameter parameter) {
-        return providers.stream().filter(p -> p.getType().equals(parameter.getType())).findFirst().orElse(null);
+        return providers.stream().filter(p -> p.getType().equals(parameter.getType()) || Arrays.asList(p.getExtraTypes()).contains(parameter.getType())).findFirst().orElse(null);
     }
 
     /**

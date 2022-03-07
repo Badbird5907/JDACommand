@@ -30,12 +30,15 @@ public class CommandContext {
     public void reply(String message) {
         event.getHook().sendMessage(message).queue();
     }
-    public void reply(MessageEmbed embed,MessageEmbed... embeds) {
-        event.getHook().sendMessageEmbeds(embed,embeds).queue();
+
+    public void reply(MessageEmbed embed, MessageEmbed... embeds) {
+        event.getHook().sendMessageEmbeds(embed, embeds).queue();
     }
+
     public void setOriginal(String message) {
         event.getHook().editOriginal(message).queue();
     }
+
     public void setOriginal(MessageEmbed... embeds) {
         event.getHook().editOriginalEmbeds(embeds).queue();
     }

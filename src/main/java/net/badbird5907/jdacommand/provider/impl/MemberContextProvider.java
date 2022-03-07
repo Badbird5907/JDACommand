@@ -1,7 +1,5 @@
 package net.badbird5907.jdacommand.provider.impl;
 
-import net.badbird5907.jdacommand.annotation.Arg;
-import net.badbird5907.jdacommand.annotation.Sender;
 import net.badbird5907.jdacommand.context.CommandContext;
 import net.badbird5907.jdacommand.context.ParameterContext;
 import net.badbird5907.jdacommand.provider.Provider;
@@ -22,7 +20,7 @@ public class MemberContextProvider implements Provider<Member> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getName(),"Member",paramContext.isRequired());
+        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getName(), "Member", paramContext.isRequired());
     }
 
     @Override

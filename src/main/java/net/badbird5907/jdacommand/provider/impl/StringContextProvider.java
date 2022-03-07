@@ -6,9 +6,6 @@ import net.badbird5907.jdacommand.provider.Provider;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
 public class StringContextProvider implements Provider<String> {
     @Override
     public String provide(CommandContext context, ParameterContext pContext) {
