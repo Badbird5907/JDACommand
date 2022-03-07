@@ -3,12 +3,15 @@ package net.badbird5907.jdacommand.events;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.badbird5907.lightning.event.Cancellable;
+import net.badbird5907.lightning.event.Event;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 @Getter
 @RequiredArgsConstructor
-public class CommandPreProcessEvent {
+public class CommandPreProcessEvent implements Event, Cancellable {
     private final String command;
-    private final String[] args;
+    private final SlashCommandEvent event;
     @Setter
     @Getter
     private boolean cancelled = false;
