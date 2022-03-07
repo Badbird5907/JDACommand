@@ -6,11 +6,14 @@ import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.annotation.Disable;
 import net.badbird5907.jdacommand.context.ParameterContext;
 import net.badbird5907.jdacommand.provider.Provider;
+import net.badbird5907.jdacommand.provider.impl.*;
 import net.badbird5907.jdacommand.util.object.CommandWrapper;
 import net.badbird5907.jdacommand.util.object.Pair;
 import net.badbird5907.lightning.EventBus;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import org.reflections.Reflections;
 
@@ -45,13 +48,11 @@ public class JDACommand {
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
      *
-     * @param prefix Bot prefix
-     * @param jda    Pass-through the {@link JDA} instance
+     * @param jda Pass-through the {@link JDA} instance
      */
-    public JDACommand(String prefix, JDA jda) {
+    public JDACommand(JDA jda) {
         if (instance != null)
             throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");
-        this.prefix = prefix;
         this.jda = jda;
         init();
     }
@@ -124,7 +125,27 @@ public class JDACommand {
 
     private void init() {
         instance = this;
-        jda.addEventListener(new CommandListener());
+        System.out.println("Initializing JDACommand...");
+        try {
+            jda.addEventListener(new CommandListener());
+            for (Provider provider : new Provider[]{
+                    new BooleanContextProvider(),
+                    new ChannelContextProvider(),
+                    new CommandContextProvider(),
+                    new EventContextProvider(),
+                    new GuildContextProvider(),
+                    new IntContextProvider(),
+                    new LongContextProvider(),
+                    new MemberContextProvider(),
+                    new RoleContextProvider(),
+                    new StringContextProvider(),
+                    new UserContextProvider()
+            }) {
+                registerProvider(provider);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -193,7 +214,12 @@ public class JDACommand {
         if (commandMap.containsKey(name) || name.isEmpty()) {
             return;
         }
-        CommandCreateAction action = jda.upsertCommand(name.toLowerCase(), command.description());
+        List<CommandCreateAction> actions = new ArrayList<>();
+        actions.add(jda.upsertCommand(name.toLowerCase(), command.description()));
+        for (Guild guild : jda.getGuilds()) {
+            if (command.serverOnly())
+                actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
+        }
         Parameter[] params = method.getParameters();
         List<Pair<ParameterContext, Provider<?>>> parameters = new ArrayList<>();
         for (int i = 0; i < params.length; i++) {
@@ -203,11 +229,21 @@ public class JDACommand {
                 throw new IllegalArgumentException("Could not find a Parameter Provider for " + param.getType().getName() + " in " + method.getName());
             }
             ParameterContext pCtx = new ParameterContext(params, i, param, param.getDeclaredAnnotations());
-            action.addOptions(provider.getOptionData(pCtx));
+            if (provider.getOptionData(pCtx) != null) {
+                for (CommandCreateAction action : actions) {
+                    action.addOptions(provider.getOptionData(pCtx));
+                }
+            }
             parameters.add(new Pair<>(pCtx, provider));
         }
         CommandWrapper wrapper = new CommandWrapper(command, name.toLowerCase(), method, o, params, parameters);
-        commandMap.put(name, wrapper);
+        for (CommandCreateAction action : actions) {
+            System.out.println("Registering command " + action);
+            action.queue((c) -> {
+                System.out.println("Registered command " + c);
+                commandMap.put(c.getName(), wrapper);
+            });
+        }
     }
 
     private Provider<?> getProvider(Parameter parameter) {
@@ -232,5 +268,9 @@ public class JDACommand {
      */
     public boolean isOwner(User user) {
         return owners.contains(user.getIdLong());
+    }
+
+    public void registerProvider(Provider<?> provider) {
+        providers.add(provider);
     }
 }
