@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>JDACommand</artifactId>
-	<version>slash-commands-dev-0.9</version>
+	<version>slash-commands-dev-0.10</version>
 	<groupId>net.badbird5907</groupId>
 	<url>https://github.com/Badbird-5907/JDACommand/</url>
 	<description>A simple command library for JDA bots</description>

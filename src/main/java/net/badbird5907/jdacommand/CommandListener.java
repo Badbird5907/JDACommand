@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
+
 public class CommandListener extends ListenerAdapter {
     public CommandListener() {
         super();
@@ -46,8 +48,12 @@ public class CommandListener extends ListenerAdapter {
                     if (c.permission().length != 0) {
                         if (e.getChannelType() == ChannelType.TEXT) {
                             Permission[] permissions = c.permission();
-                            if (!e.getMember().getPermissions().contains(permissions[0]))
-                                return;
+                            EnumSet<Permission> set = e.getMember().getPermissions();
+                            for (Permission permission : permissions) {
+                                if (!set.contains(permission)) {
+                                    return;
+                                }
+                            }
                         } else return;
                     }
                     CommandWrapper wrapper = JDACommand.getCommandMap().get(command.toLowerCase());
