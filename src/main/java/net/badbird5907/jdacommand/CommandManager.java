@@ -21,7 +21,7 @@ public class CommandManager {
         try {
             CommandWrapper wrapper = JDACommand.getCommandMap().get(command.name().toLowerCase());
             Object[] params = new Object[wrapper.getParams().length];
-            CommandContext context = new CommandContext(e.getMember(), e, e.getChannel());
+            CommandContext context = new CommandContext(e.getMember(), e, e.getMessageChannel());
             for (Pair<ParameterContext, Provider<?>> parameter : wrapper.getParameters()) {
                 try {
                     params[parameter.getValue0().getParameterIndex()] = parameter.getValue1().provide(context, parameter.getValue0());

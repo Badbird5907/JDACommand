@@ -1,5 +1,3 @@
-# Don't use massive WIP
-
 # JDACommand
 [![Maven Central](https://img.shields.io/maven-central/v/net.badbird5907/JDACommand.svg?label=Maven%20Central&style=for-the-badge)](https://search.maven.org/search?q=g:%22net.badbird5907%22%20AND%20a:%22JDACommand%22)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBadbird-5907%2FJDACommand&count_bg=%236EFF00&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Views+%28as+of+21%2F05%2F06%29&edge_flat=true)](https://hits.seeyoufarm.com)
@@ -28,6 +26,27 @@ dependencies {
     implementation 'net.badbird5907:JDACommand:2.0.0-REL'
 }
 ```
+# Important
+To allow command argument names to work correctly, you need to pass `-parameters` to your compiler
+Maven:
+```xml
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+            <parameters>true</parameters>
+        </configuration>
+    </plugin>
+</plugins>
+```
+Gradle:
+```groovy
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+```
 # Wiki
 |  Name  |  Link  |
 |---|---|
@@ -37,6 +56,8 @@ dependencies {
 
 
 # Usage:
+outdated
+<!-- TODO: outdated -->
 
 ## Code Examples:
 
