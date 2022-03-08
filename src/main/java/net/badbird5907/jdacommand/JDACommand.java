@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import org.reflections.Reflections;
 
@@ -23,6 +24,7 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 import static java.lang.System.out;
 
@@ -38,12 +40,13 @@ public class JDACommand {
     private static final EventBus eventBus = new EventBus();
 
     private static JDACommand instance;
-    public String prefix;
     public JDA jda;
 
     @Getter
     private final Set<Long> owners = new HashSet<>();
     private final List<Object> alreadyInit = new ArrayList<>();
+
+    private static final Pattern COMMAND_REGEX = Pattern.compile("^[\\w-]{1,32}$",Pattern.UNICODE_CHARACTER_CLASS);
 
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
@@ -60,14 +63,12 @@ public class JDACommand {
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
      *
-     * @param prefix Bot prefix
      * @param jda    Pass-through the {@link JDA} instance
      * @param owners {@link Long} array of owners
      */
-    public JDACommand(String prefix, JDA jda, Long[] owners) {
+    public JDACommand(JDA jda, Long[] owners) {
         if (instance != null)
             throw new IllegalStateException("Cannot instantiate more than one JDACommand instance.");
-        this.prefix = prefix;
         this.jda = jda;
         Collections.addAll(this.owners, owners);
         init();
@@ -211,6 +212,9 @@ public class JDACommand {
     private void registerCommand(Command command, String name, Method method, Object o) {
         if (command.disable() || method.isAnnotationPresent(Disable.class))
             return;
+        if (!COMMAND_REGEX.matcher(name.toLowerCase()).matches()) {
+            throw new IllegalArgumentException("Command name must match regex: " + COMMAND_REGEX.pattern() + " see https://discord.com/developers/docs/interactions/application-commands for more info");
+        }
         if (commandMap.containsKey(name) || name.isEmpty()) {
             return;
         }
@@ -231,7 +235,10 @@ public class JDACommand {
             ParameterContext pCtx = new ParameterContext(params, i, param, param.getDeclaredAnnotations());
             if (provider.getOptionData(pCtx) != null) {
                 for (CommandCreateAction action : actions) {
-                    action.addOptions(provider.getOptionData(pCtx));
+                    OptionData option = provider.getOptionData(pCtx);
+                    if (!option.isRequired() && pCtx.isRequired())
+                        option.setRequired(true);
+                    action.addOptions(option);
                 }
             }
             parameters.add(new Pair<>(pCtx, provider));

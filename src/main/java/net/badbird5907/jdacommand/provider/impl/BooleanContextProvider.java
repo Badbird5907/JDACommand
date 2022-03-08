@@ -1,5 +1,6 @@
 package net.badbird5907.jdacommand.provider.impl;
 
+import net.badbird5907.jdacommand.annotation.Arg;
 import net.badbird5907.jdacommand.context.CommandContext;
 import net.badbird5907.jdacommand.context.ParameterContext;
 import net.badbird5907.jdacommand.provider.Provider;
@@ -16,7 +17,7 @@ public class BooleanContextProvider implements Provider<Boolean> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return new OptionData(OptionType.BOOLEAN, paramContext.getName(), "Boolean", paramContext.isRequired());
+        return new OptionData(OptionType.BOOLEAN, paramContext.getArgName(), "Boolean", paramContext.isRequired());
     }
 
     @Override

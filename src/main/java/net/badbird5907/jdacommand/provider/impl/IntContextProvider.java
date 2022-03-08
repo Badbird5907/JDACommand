@@ -16,7 +16,7 @@ public class IntContextProvider implements Provider<Integer> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return new OptionData(OptionType.INTEGER, paramContext.getName(), "Integer", paramContext.isRequired());
+        return new OptionData(OptionType.INTEGER, paramContext.getArgName(), "Integer", paramContext.isRequired());
     }
 
     @Override

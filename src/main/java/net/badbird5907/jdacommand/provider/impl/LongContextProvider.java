@@ -16,7 +16,7 @@ public class LongContextProvider implements Provider<Long> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return new OptionData(OptionType.INTEGER, paramContext.getName(), "Long", paramContext.isRequired());
+        return new OptionData(OptionType.INTEGER, paramContext.getArgName(), "Long", paramContext.isRequired());
     }
 
     @Override

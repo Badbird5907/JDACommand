@@ -20,7 +20,7 @@ public class MemberContextProvider implements Provider<Member> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getName(), "Member", paramContext.isRequired());
+        return paramContext.isSender() ? null : new OptionData(OptionType.MENTIONABLE, paramContext.getArgName(), "Member", paramContext.isRequired());
     }
 
     @Override

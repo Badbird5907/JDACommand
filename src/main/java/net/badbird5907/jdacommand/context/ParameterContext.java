@@ -2,6 +2,7 @@ package net.badbird5907.jdacommand.context;
 
 import lombok.Getter;
 import net.badbird5907.jdacommand.annotation.Arg;
+import net.badbird5907.jdacommand.annotation.Optional;
 import net.badbird5907.jdacommand.annotation.Required;
 import net.badbird5907.jdacommand.annotation.Sender;
 
@@ -26,10 +27,21 @@ public class ParameterContext {
         this.annotations = Arrays.asList(annotations);
         this.name = parameter.getName();
         this.required = parameter.isAnnotationPresent(Required.class);
+        if (required && parameter.isAnnotationPresent(Optional.class)) {
+            throw new IllegalArgumentException("Parameter cannot be both required and optional");
+        }
     }
 
     public boolean hasAnnotation(Class<? extends Annotation> annotation) {
         return parameter.isAnnotationPresent(annotation);
+    }
+
+    public String getArgName() {
+        return hasAnnotation(Arg.class) ? getAnnotation(Arg.class).value() : getName();
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+        return parameter.getAnnotation(annotation);
     }
 
     public boolean isSender() {

@@ -16,7 +16,7 @@ public class RoleContextProvider implements Provider<Role> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return new OptionData(OptionType.ROLE, paramContext.getName(), "Role", paramContext.isRequired());
+        return new OptionData(OptionType.ROLE, paramContext.getArgName(), "Role", paramContext.isRequired());
     }
 
     @Override

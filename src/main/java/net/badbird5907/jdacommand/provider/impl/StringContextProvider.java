@@ -16,7 +16,7 @@ public class StringContextProvider implements Provider<String> {
 
     @Override
     public OptionData getOptionData(ParameterContext paramContext) {
-        return new OptionData(OptionType.STRING, paramContext.getName(), "String", paramContext.isRequired());
+        return new OptionData(OptionType.STRING, paramContext.getArgName(), "String", paramContext.isRequired());
     }
 
     @Override
