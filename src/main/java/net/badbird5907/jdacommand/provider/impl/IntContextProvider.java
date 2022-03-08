@@ -10,8 +10,10 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class IntContextProvider implements Provider<Integer> {
     @Override
     public Integer provide(CommandContext context, ParameterContext pContext) throws Exception {
-        Object o = context.getOrDefault(pContext.getName(), false);
-        return o instanceof Integer ? (Integer) o : (int) ((OptionMapping) o).getAsLong();
+        if (context.getOption(pContext.getName()) == null) {
+            return provideDefault(context, pContext);
+        }
+        return context.getOption(pContext.getName()).getAsInt();
     }
 
     @Override
@@ -27,5 +29,10 @@ public class IntContextProvider implements Provider<Integer> {
     @Override
     public Class<?>[] getExtraTypes() {
         return new Class[]{int.class};
+    }
+
+    @Override
+    public Integer provideDefault(CommandContext context, ParameterContext pContext) {
+        return -1;
     }
 }

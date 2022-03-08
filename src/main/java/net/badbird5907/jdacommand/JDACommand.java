@@ -1,6 +1,7 @@
 package net.badbird5907.jdacommand;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.annotation.Disable;
@@ -24,6 +25,7 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import static java.lang.System.out;
@@ -44,7 +46,15 @@ public class JDACommand {
 
     @Getter
     private final Set<Long> owners = new HashSet<>();
-    private final List<Object> alreadyInit = new ArrayList<>();
+
+    /**
+     * For testing purposes
+     */
+    public interface ReturnCallBack {
+        boolean shouldUpsertCommand(Guild guild);
+    }
+    @Setter
+    private ReturnCallBack returnCallBack = null;
 
     private static final Pattern COMMAND_REGEX = Pattern.compile("^[\\w-]{1,32}$",Pattern.UNICODE_CHARACTER_CLASS);
 
@@ -163,18 +173,19 @@ public class JDACommand {
      * @param o Class
      */
     public void registerCommand(Object o) {
-        if (alreadyInit.contains(o)) {
+        //if (alreadyInit.contains(o)) {
+        if (false) {
             return;
         }
         for (Method m : o.getClass().getDeclaredMethods()) {
-            if (m.getAnnotation(Command.class) != null && m.getReturnType() == CommandResult.class) {
+            if (m.getAnnotation(Command.class) != null) {
                 Command command = m.getAnnotation(Command.class);
                 registerCommand(command, command.name(), m, o);
                 for (String alias : command.aliases()) {
                     registerCommand(command, alias, m, o);
                 }
 
-                alreadyInit.add(o);
+                //alreadyInit.add(o);
             }
         }
     }
@@ -210,46 +221,58 @@ public class JDACommand {
     }
 
     private void registerCommand(Command command, String name, Method method, Object o) {
-        if (command.disable() || method.isAnnotationPresent(Disable.class))
-            return;
-        if (!COMMAND_REGEX.matcher(name.toLowerCase()).matches()) {
-            throw new IllegalArgumentException("Command name must match regex: " + COMMAND_REGEX.pattern() + " see https://discord.com/developers/docs/interactions/application-commands for more info");
-        }
-        if (commandMap.containsKey(name) || name.isEmpty()) {
-            return;
-        }
-        List<CommandCreateAction> actions = new ArrayList<>();
-        actions.add(jda.upsertCommand(name.toLowerCase(), command.description()));
-        for (Guild guild : jda.getGuilds()) {
-            if (command.serverOnly())
-                actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
-        }
-        Parameter[] params = method.getParameters();
-        List<Pair<ParameterContext, Provider<?>>> parameters = new ArrayList<>();
-        for (int i = 0; i < params.length; i++) {
-            Parameter param = params[i];
-            Provider<?> provider = getProvider(param);
-            if (provider == null) {
-                throw new IllegalArgumentException("Could not find a Parameter Provider for " + param.getType().getName() + " in " + method.getName());
+        try {
+            out.println("Registering command: " + name);
+            if (command.disable() || method.isAnnotationPresent(Disable.class))
+                return;
+            if (!COMMAND_REGEX.matcher(name.toLowerCase()).matches()) {
+                throw new IllegalArgumentException("Command name must match regex: " + COMMAND_REGEX.pattern() + " see https://discord.com/developers/docs/interactions/application-commands for more info");
             }
-            ParameterContext pCtx = new ParameterContext(params, i, param, param.getDeclaredAnnotations());
-            if (provider.getOptionData(pCtx) != null) {
-                for (CommandCreateAction action : actions) {
-                    OptionData option = provider.getOptionData(pCtx);
-                    if (!option.isRequired() && pCtx.isRequired())
-                        option.setRequired(true);
-                    action.addOptions(option);
+            if (commandMap.containsKey(name) || name.isEmpty()) {
+                return;
+            }
+            List<CommandCreateAction> actions = new ArrayList<>();
+            if (command.serverOnly()) {
+                for (Guild guild : jda.getGuilds()) {
+                    if (command.serverOnly()) {
+                        boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
+                        if (upsert) {
+                            actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
+                        }
+                    }
                 }
+            } else {
+                jda.upsertCommand(name.toLowerCase(), command.description());
             }
-            parameters.add(new Pair<>(pCtx, provider));
-        }
-        CommandWrapper wrapper = new CommandWrapper(command, name.toLowerCase(), method, o, params, parameters);
-        for (CommandCreateAction action : actions) {
-            System.out.println("Registering command " + action);
-            action.queue((c) -> {
-                System.out.println("Registered command " + c);
-                commandMap.put(c.getName(), wrapper);
-            });
+            Parameter[] params = method.getParameters();
+            List<Pair<ParameterContext, Provider<?>>> parameters = new ArrayList<>();
+            for (int i = 0; i < params.length; i++) {
+                Parameter param = params[i];
+                Provider<?> provider = getProvider(param);
+                if (provider == null) {
+                    throw new IllegalArgumentException("Could not find a Parameter Provider for " + param.getType().getName() + " in " + method.getName());
+                }
+                ParameterContext pCtx = new ParameterContext(params, i, param, param.getDeclaredAnnotations());
+                if (provider.getOptionData(pCtx) != null) {
+                    for (CommandCreateAction action : actions) {
+                        OptionData option = provider.getOptionData(pCtx);
+                        if (!option.isRequired() && pCtx.isRequired())
+                            option.setRequired(true);
+                        action.addOptions(option);
+                    }
+                }
+                parameters.add(new Pair<>(pCtx, provider));
+            }
+            CommandWrapper wrapper = new CommandWrapper(command, name.toLowerCase(), method, o, params, parameters);
+            for (CommandCreateAction action : actions) {
+                action.queue((c) -> {
+                    System.out.println("Registered command " + c);
+                    commandMap.put(c.getName(), wrapper);
+                });
+            }
+            System.out.println("Done Registering command " + name);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

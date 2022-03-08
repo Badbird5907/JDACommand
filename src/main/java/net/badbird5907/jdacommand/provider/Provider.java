@@ -8,6 +8,10 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public interface Provider<T> {
     T provide(CommandContext context, ParameterContext pContext) throws Exception;
 
+    default T provideDefault(CommandContext context, ParameterContext pContext) {
+        return null;
+    }
+
     /**
      * @param paramContext
      * @return The {@link OptionType} of this provider.

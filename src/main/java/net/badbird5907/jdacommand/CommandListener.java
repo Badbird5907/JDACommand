@@ -22,9 +22,7 @@ public class CommandListener extends ListenerAdapter {
             String command = e.getName();
             System.out.println("Command: " + e.getName());
             JDACommand.getCommandMap().forEach((name, pair) -> {
-                System.out.println("a");
                 if (e.getName().equalsIgnoreCase(name)) { //TODO custom error messages
-                    System.out.println("b");
                     Command c = pair.getCommand();
                     if (c.disable())
                         return;

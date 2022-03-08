@@ -10,8 +10,10 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class LongContextProvider implements Provider<Long> {
     @Override
     public Long provide(CommandContext context, ParameterContext pContext) throws Exception {
-        Object o = context.getOrDefault(pContext.getName(), false);
-        return o instanceof Long ? (Long) o : (int) ((OptionMapping) o).getAsLong();
+        if (context.getOption(pContext.getName()) == null) {
+            return provideDefault(context, pContext);
+        }
+        return context.getOption(pContext.getName()).getAsLong();
     }
 
     @Override
@@ -27,5 +29,10 @@ public class LongContextProvider implements Provider<Long> {
     @Override
     public Class<?>[] getExtraTypes() {
         return new Class[]{long.class};
+    }
+
+    @Override
+    public Long provideDefault(CommandContext context, ParameterContext pContext) {
+        return -1L;
     }
 }

@@ -29,19 +29,28 @@ public class CommandManager {
                     if (parameter.getValue1().failOnException()) {
                         System.err.println("Failed to provide parameter " + parameter.getValue0().getParameterIndex() + " for command " + command.name());
                         throw ex;
-                    } else ex.printStackTrace();
+                    } else {
+                        params[parameter.getValue0().getParameterIndex()] = parameter.getValue1().provideDefault(context, parameter.getValue0());
+                    }
                 }
             }
-            CommandResult result = (CommandResult) cmd.invoke(o, params);
-            if (JDACommand.getOverrideCommandResult().get(result) != null) {
-                Object obj = JDACommand.getOverrideCommandResult().get(result);
-                if (obj instanceof String) {
-                    e.reply(String.valueOf(obj)).queue();
-                } else {
-                    e.replyEmbeds((MessageEmbed) obj).queue();
+            Object r = cmd.invoke(o, params);
+            if (r instanceof CommandResult) {
+                CommandResult result = (CommandResult) r;
+                if (JDACommand.getOverrideCommandResult().get(result) != null) {
+                    Object obj = JDACommand.getOverrideCommandResult().get(result);
+                    if (obj instanceof String) {
+                        e.reply(String.valueOf(obj)).queue();
+                    } else {
+                        e.replyEmbeds((MessageEmbed) obj).queue();
+                    }
+                } else if ((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null) {
+                    e.reply(result.getMessage()).queue();
                 }
-            } else if ((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null) {
-                e.reply(result.getMessage()).queue();
+            }else if (r instanceof String) {
+                e.reply(String.valueOf(r)).queue();
+            }else if (r instanceof MessageEmbed) {
+                e.replyEmbeds((MessageEmbed) r).queue();
             }
         } catch (Exception illegalAccessException) {
             illegalAccessException.printStackTrace();

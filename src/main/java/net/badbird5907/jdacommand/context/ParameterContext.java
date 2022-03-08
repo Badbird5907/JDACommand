@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 public class ParameterContext {
@@ -37,7 +38,7 @@ public class ParameterContext {
     }
 
     public String getArgName() {
-        return hasAnnotation(Arg.class) ? getAnnotation(Arg.class).value() : getName();
+        return hasAnnotation(Arg.class) ? getAnnotation(Arg.class).value().toLowerCase() : getName().toLowerCase();
     }
 
     public <T extends Annotation> T getAnnotation(Class<T> annotation) {
