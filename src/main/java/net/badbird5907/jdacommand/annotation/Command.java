@@ -42,7 +42,6 @@ public @interface Command {
      * <p><font color="red">
      * <b>
      * Only the first permission index in the array will be checked, multiple permissions will be implemented later.
-     * Also, this marks the command as server-only See: {@link Command#serverOnly()}
      * </b>
      * </font>
      * <b>Defaults to {}</b>
@@ -65,7 +64,6 @@ public @interface Command {
      * <b>Defaults to false</b>
      * <p><font color="red">
      * <b>
-     * This marks the command as server-only. See: {@link Command#serverOnly()}
      * </b>
      * </font></p>
      *
@@ -78,7 +76,6 @@ public @interface Command {
      * <b>Defaults to false</b>
      * <p><font color="red">
      * <b>
-     * This marks the command as server-only See: {@link Command#serverOnly()}
      * </b>
      * </font></p>
      *
@@ -100,13 +97,6 @@ public @interface Command {
      * @return
      */
     boolean dmsOnly() default false;
-
-    /**
-     * Make this command only execute when called in a server
-     *
-     * @return
-     */
-    boolean serverOnly() default false;
 
     /**
      * The type of command this is. Purely for documentation and for help commands, no actual affect on the bot.

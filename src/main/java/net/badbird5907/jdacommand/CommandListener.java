@@ -37,9 +37,6 @@ public class CommandListener extends ListenerAdapter {
                     if (c.dmsOnly())
                         if (e.getChannelType() != ChannelType.PRIVATE)
                             return;
-                    if (c.serverOnly())
-                        if (e.getChannelType() != ChannelType.TEXT)
-                            return;
                     if (c.adminOnly())
                         if (e.getChannelType() == ChannelType.TEXT && !e.getMember().getPermissions().contains(Permission.ADMINISTRATOR))
                             return;
@@ -55,7 +52,9 @@ public class CommandListener extends ListenerAdapter {
                         } else return;
                     }
                     CommandWrapper wrapper = JDACommand.getCommandMap().get(command.toLowerCase());
-                    e.deferReply().queue(c1 -> {}, t-> {});
+                    e.deferReply().queue(c1 -> {
+                    }, t -> {
+                    });
                     CommandManager.process(pair.getMethod(), e, wrapper.getObject(), c);
                 }
             });

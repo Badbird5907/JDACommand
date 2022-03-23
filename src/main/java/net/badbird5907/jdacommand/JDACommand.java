@@ -232,17 +232,11 @@ public class JDACommand {
                 return;
             }
             List<CommandCreateAction> actions = new ArrayList<>();
-            if (command.serverOnly()) {
-                for (Guild guild : jda.getGuilds()) {
-                    if (command.serverOnly()) {
-                        boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
-                        if (upsert) {
-                            actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
-                        }
-                    }
+            for (Guild guild : jda.getGuilds()) {
+                boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
+                if (upsert) {
+                    actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
                 }
-            } else {
-                jda.upsertCommand(name.toLowerCase(), command.description());
             }
             Parameter[] params = method.getParameters();
             List<Pair<ParameterContext, Provider<?>>> parameters = new ArrayList<>();
