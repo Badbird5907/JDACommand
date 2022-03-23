@@ -5,7 +5,8 @@
 
 JavaDocs: [here](https://www.javadoc.io/doc/net.badbird5907/JDACommand/latest/index.html)
 
-A simple JDA command library, still a WIP
+
+
 # Building
 1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
 2. Open the folder "JDACommand" in cmd
@@ -17,17 +18,17 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>2.0.0-REL</version>
+    <version>4.0.0-REL</version>
 </dependency>
 ```
 Or alternatively, if you use gradle:
 ```groovy
 dependencies {
-    implementation 'net.badbird5907:JDACommand:2.0.0-REL'
+    implementation 'net.badbird5907:JDACommand:4.0.0-REL'
 }
 ```
 # Important
-To allow command argument names to work correctly, you need to pass `-parameters` to your compiler
+To allow command argument names to work correctly, you need to pass `-parameters` to your compiler <br/>
 Maven:
 ```xml
 <plugins>
@@ -61,46 +62,43 @@ outdated
 
 ## Code Examples:
 
+Initilization
 ```java
-import net.badbird5907.jdacommand.annotation.Command;
-import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
 
-public class YourClass {
+public class YourMainClass {
     public static void main(String[] args) {
-        JDA jda = new JDABuilder.create("token").build;
-        JDACommand command = new JDACommand("prefix", jda);
+        JDA jda = JDABuilder.createDefault("token").build();
+        JDACommand command = new JDACommand(jda);
         command.registerCommandsInPackage("your.package.commands");
     }
 }
 
-//in package your.package.commands
-public class YourCommandClass extends CommandBase {
-    @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
-        channel.sendMessage("Hello World!").queue();
-        return CommandResult.SUCCESS;
+```
+Commands:
+```java
+import net.badbird5907.jdacommand.annotation.Command;
+import net.badbird5907.jdacommand.annotation.Required;
+import net.badbird5907.jdacommand.annotation.Sender;
+import net.badbird5907.jdacommand.context.CommandContext;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+
+public class ExampleCommand {
+    @Command(name = "hello", description = "Replies with \"Hello!\"")
+    public void hello(CommandContext ctx, @Sender User sender) {
+        ctx.reply("Hello, " + sender.getAsTag() + "!");
+    }
+    @Command(name = "ban",description = "Ban a member",permission = Permission.BAN_MEMBERS)
+    public void ban(CommandContext ctx, @Required Member target, @Required String reason, boolean delmessages) {
+        ctx.getGuild().ban(target,delmessages ? 7 : 0,reason).queue();
+        ctx.reply("Banned " + target.getUser().getAsMention() + " for `" + reason + "`!");
     }
 }
 
-public class YourCommandClass1 extends CommandBase {
-    @Command(name = "hello1", description = "Responds with \"Hello World!\"")
-    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
-        channel.sendMessage("Hello World! (1)").queue();
-        return CommandResult.SUCCESS;
-    }
-}
-
-public class YourCommandClass2 extends CommandBase {
-    @Command(name = "hello2", description = "Responds with \"Hello World!\"")
-    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
-        channel.sendMessage("Hello World! (2)").queue();
-        return CommandResult.SUCCESS;
-    }
-}
 ```
 ### OR:
 
@@ -116,17 +114,9 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class YourClass {
     public static void main(String[] args) {
-        JDA jda = new JDABuilder.create("token").build;
-        JDACommand command = new JDACommand("prefix", jda);
-        command.registerCommand(new YourCommandClass());
-    }
-}
-
-public class YourCommandClass extends CommandBase {
-    @Command(name = "hello", description = "Responds with \"Hello World!\"")
-    public CommandResult execute(String[] args, CommandEvent event, User author, Member member, Guild guild, MessageChannel channel) {
-        channel.sendMessage("Hello World!").queue();
-        return CommandResult.SUCCESS;
+        JDA jda = JDABuilder.createDefault("token").build();
+        JDACommand command = new JDACommand(jda);
+        command.registerCommand(new ExampleCommand());
     }
 }
 ```
@@ -135,7 +125,7 @@ public class YourCommandClass extends CommandBase {
 # License
 GNU General Public License
 ```
-Copyright (C) 2021  Badbird-5907
+Copyright (C) 2022  Badbird-5907
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -150,5 +140,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
-tl;dr: You can use this code as you wish.
 Also see [this](/blob/master/license.md)
