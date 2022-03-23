@@ -26,6 +26,27 @@ dependencies {
     implementation 'net.badbird5907:JDACommand:2.0.0-REL'
 }
 ```
+# Important
+To allow command argument names to work correctly, you need to pass `-parameters` to your compiler
+Maven:
+```xml
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+            <parameters>true</parameters>
+        </configuration>
+    </plugin>
+</plugins>
+```
+Gradle:
+```groovy
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+```
 # Wiki
 |  Name  |  Link  |
 |---|---|
@@ -35,12 +56,13 @@ dependencies {
 
 
 # Usage:
+outdated
+<!-- TODO: outdated -->
 
 ## Code Examples:
 
 ```java
-import net.badbird5907.jdacommand.Command;
-import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
@@ -85,8 +107,7 @@ public class YourCommandClass2 extends CommandBase {
 You can do this:
 
 ```java
-import net.badbird5907.jdacommand.Command;
-import net.badbird5907.jdacommand.CommandBase;
+import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.CommandResult;
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;

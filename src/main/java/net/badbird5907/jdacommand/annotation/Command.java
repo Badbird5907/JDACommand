@@ -1,5 +1,7 @@
-package net.badbird5907.jdacommand;
+package net.badbird5907.jdacommand.annotation;
 
+import net.badbird5907.jdacommand.CommandType;
+import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 
@@ -14,6 +16,7 @@ public @interface Command {
     /**
      * The name of the command to be executed.
      * <b>Required</b>
+     *
      * @return
      */
     String name();
@@ -21,6 +24,7 @@ public @interface Command {
     /**
      * Brief description of the command
      * <b>Defaults to ""</b>
+     *
      * @return
      */
     String description() default "";
@@ -28,6 +32,7 @@ public @interface Command {
     /**
      * Any aliases for the command
      * <b>Defaults to {}</b>
+     *
      * @return
      */
     String[] aliases() default {};
@@ -35,12 +40,13 @@ public @interface Command {
     /**
      * Permission required for command
      * <p><font color="red">
-     *     <b>
-     *         Only the first permission index in the array will be checked, multiple permissions will be implemented later.
-     *         Also, this marks the command as server-only See: {@link Command#serverOnly()}
-     *     </b>
+     * <b>
+     * Only the first permission index in the array will be checked, multiple permissions will be implemented later.
+     * Also, this marks the command as server-only See: {@link Command#serverOnly()}
+     * </b>
      * </font>
      * <b>Defaults to {}</b>
+     *
      * @return
      */
     Permission[] permission() default {}; //can't do Permission permission() default null, because this is a annotation
@@ -49,6 +55,7 @@ public @interface Command {
      * Bot owner can execute only.
      * See {@link JDACommand#isOwner(User)} and {@link JDACommand#addOwner(long)}
      * <b>Defaults to false</b>
+     *
      * @return
      */
     boolean botOwnerOnly() default false;
@@ -57,10 +64,11 @@ public @interface Command {
      * Can only be executed by server owners.
      * <b>Defaults to false</b>
      * <p><font color="red">
-     *     <b>
-     *         This marks the command as server-only. See: {@link Command#serverOnly()}
-     *     </b>
-     *     </font></p>
+     * <b>
+     * This marks the command as server-only. See: {@link Command#serverOnly()}
+     * </b>
+     * </font></p>
+     *
      * @return weather the command can be executed by server owners
      */
     boolean serverOwnerOnly() default false;
@@ -73,6 +81,7 @@ public @interface Command {
      * This marks the command as server-only See: {@link Command#serverOnly()}
      * </b>
      * </font></p>
+     *
      * @return
      */
     boolean adminOnly() default false;
@@ -80,24 +89,28 @@ public @interface Command {
     /**
      * Disable this command (will not be registered)
      * <b>Defaults to false</b>
+     *
      * @return
      */
     boolean disable() default false;
 
     /**
      * Make this command only execute when called in a private-message
+     *
      * @return
      */
     boolean dmsOnly() default false;
 
     /**
      * Make this command only execute when called in a server
+     *
      * @return
      */
     boolean serverOnly() default false;
 
     /**
      * The type of command this is. Purely for documentation and for help commands, no actual affect on the bot.
+     *
      * @return
      */
     CommandType commandType() default CommandType.UTIL;
