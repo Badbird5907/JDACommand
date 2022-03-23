@@ -21,7 +21,7 @@ public class CommandManager {
         try {
             CommandWrapper wrapper = JDACommand.getCommandMap().get(command.name().toLowerCase());
             Object[] params = new Object[wrapper.getParams().length];
-            CommandContext context = new CommandContext(e.getMember(), e, e.getMessageChannel());
+            CommandContext context = new CommandContext(e.getMember(), e, e.getMessageChannel(), e.getGuild());
             for (Pair<ParameterContext, Provider<?>> parameter : wrapper.getParameters()) {
                 try {
                     params[parameter.getValue0().getParameterIndex()] = parameter.getValue1().provide(context, parameter.getValue0());
@@ -47,9 +47,9 @@ public class CommandManager {
                 } else if ((result != CommandResult.SUCCESS) && (result != CommandResult.OTHER) && result != null) {
                     e.reply(result.getMessage()).queue();
                 }
-            }else if (r instanceof String) {
+            } else if (r instanceof String) {
                 e.reply(String.valueOf(r)).queue();
-            }else if (r instanceof MessageEmbed) {
+            } else if (r instanceof MessageEmbed) {
                 e.replyEmbeds((MessageEmbed) r).queue();
             }
         } catch (Exception illegalAccessException) {

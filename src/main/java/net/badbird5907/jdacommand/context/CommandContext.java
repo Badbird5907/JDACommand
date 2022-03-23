@@ -2,6 +2,7 @@ package net.badbird5907.jdacommand.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -16,6 +17,7 @@ public class CommandContext {
     private final Member member;
     private final SlashCommandInteractionEvent event;
     private final MessageChannel channel;
+    private final Guild guild;
 
     public OptionMapping getOption(String name) {
         return event.getOption(name);
