@@ -59,7 +59,7 @@ compileJava {
 # Usage:
 ## Code Examples:
 
-Initilization
+Initialization:
 ```java
 import net.badbird5907.jdacommand.JDACommand;
 import net.dv8tion.jda.api.JDA;
