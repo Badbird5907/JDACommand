@@ -57,9 +57,6 @@ compileJava {
 
 
 # Usage:
-outdated
-<!-- TODO: outdated -->
-
 ## Code Examples:
 
 Initilization
