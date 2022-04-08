@@ -26,7 +26,7 @@ public class ParameterContext {
         this.parameterIndex = parameterIndex;
         this.parameter = parameter;
         this.annotations = Arrays.asList(annotations);
-        this.name = parameter.getName();
+        this.name = parameter.getName().toLowerCase();
         this.required = parameter.isAnnotationPresent(Required.class);
         if (required && parameter.isAnnotationPresent(Optional.class)) {
             throw new IllegalArgumentException("Parameter cannot be both required and optional");
