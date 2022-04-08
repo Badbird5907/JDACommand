@@ -18,13 +18,13 @@ The library is hosted on the maven central repo so just simply add this:
 <dependency>
     <groupId>net.badbird5907</groupId>
     <artifactId>JDACommand</artifactId>
-    <version>4.0.0-REL</version>
+    <version>4.0.1-REL</version>
 </dependency>
 ```
 Or alternatively, if you use gradle:
 ```groovy
 dependencies {
-    implementation 'net.badbird5907:JDACommand:4.0.0-REL'
+    implementation 'net.badbird5907:JDACommand:4.0.1-REL'
 }
 ```
 # Important
