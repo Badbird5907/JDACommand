@@ -25,7 +25,6 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import static java.lang.System.out;
@@ -47,16 +46,22 @@ public class JDACommand {
     @Getter
     private final Set<Long> owners = new HashSet<>();
 
+    @Getter
+    private static boolean testing = false;
+
+    private List<net.dv8tion.jda.api.interactions.commands.Command> jdaCmds = new ArrayList<>();
+
     /**
      * For testing purposes
      */
     public interface ReturnCallBack {
         boolean shouldUpsertCommand(Guild guild);
     }
+
     @Setter
     private ReturnCallBack returnCallBack = null;
 
-    private static final Pattern COMMAND_REGEX = Pattern.compile("^[\\w-]{1,32}$",Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern COMMAND_REGEX = Pattern.compile("^[\\w-]{1,32}$", Pattern.UNICODE_CHARACTER_CLASS);
 
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
@@ -103,7 +108,6 @@ public class JDACommand {
      * @return
      */
     public JDACommand overrideCommandResultMessage(CommandResult commandResult, String message) {
-        overrideCommandResult.remove(commandResult);
         overrideCommandResult.put(commandResult, message);
         return this;
     }
@@ -118,7 +122,6 @@ public class JDACommand {
      * @return
      */
     public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message) {
-        overrideCommandResult.remove(commandResult);
         overrideCommandResult.put(commandResult, message);
         return this;
     }
@@ -231,13 +234,19 @@ public class JDACommand {
             if (commandMap.containsKey(name) || name.isEmpty()) {
                 return;
             }
+
             List<CommandCreateAction> actions = new ArrayList<>();
-            for (Guild guild : jda.getGuilds()) {
-                boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
-                if (upsert) {
-                    actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
+            if (testing) {
+                for (Guild guild : jda.getGuilds()) {
+                    boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
+                    if (upsert) {
+                        actions.add(guild.upsertCommand(name.toLowerCase(), command.description()));
+                    }
                 }
+            } else {
+                actions.add(jda.upsertCommand(name.toLowerCase(), command.description()));
             }
+
             Parameter[] params = method.getParameters();
             List<Pair<ParameterContext, Provider<?>>> parameters = new ArrayList<>();
             for (int i = 0; i < params.length; i++) {
@@ -267,6 +276,36 @@ public class JDACommand {
             System.out.println("Done Registering command " + name);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void finishRegister() {
+        List<String> allCmds = new ArrayList<>();
+        for (Map.Entry<String, CommandWrapper> entry : commandMap.entrySet()) {
+            allCmds.add(entry.getKey());
+            Collections.addAll(allCmds, entry.getValue().getCommand().aliases());
+        }
+        if (testing) {
+            for (Guild guild : jda.getGuilds()) {
+                guild.retrieveCommands().queue(list -> {
+                    for (net.dv8tion.jda.api.interactions.commands.Command command : list) {
+                        if (!allCmds.contains(command.getName())) {
+                            command.delete().queue();
+                            continue;
+                        }
+
+                    }
+                });
+            }
+        }else {
+            jda.retrieveCommands().queue(list -> {
+                for (net.dv8tion.jda.api.interactions.commands.Command command : list) {
+                    if (!allCmds.contains(command.getName())) {
+                        command.delete().queue();
+                        continue;
+                    }
+                }
+            });
         }
     }
 
