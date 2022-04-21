@@ -48,7 +48,7 @@ public @interface Command {
      *
      * @return
      */
-    Permission[] permission() default {}; //can't do Permission permission() default null, because this is a annotation
+    Permission[] permission() default {};
 
     /**
      * Bot owner can execute only.
@@ -104,4 +104,6 @@ public @interface Command {
      * @return
      */
     CommandType commandType() default CommandType.UTIL;
+
+    int cooldown() default 0;
 }

@@ -6,6 +6,8 @@ import lombok.SneakyThrows;
 import net.badbird5907.jdacommand.annotation.Command;
 import net.badbird5907.jdacommand.annotation.Disable;
 import net.badbird5907.jdacommand.context.ParameterContext;
+import net.badbird5907.jdacommand.message.DefaultMessageHandler;
+import net.badbird5907.jdacommand.message.MessageHandler;
 import net.badbird5907.jdacommand.provider.Provider;
 import net.badbird5907.jdacommand.provider.impl.*;
 import net.badbird5907.jdacommand.util.object.CommandWrapper;
@@ -32,8 +34,6 @@ import static java.lang.System.out;
 public class JDACommand {
     @Getter
     private static final Map<String, CommandWrapper> commandMap = new ConcurrentHashMap<>();
-    @Getter
-    private static final Map<CommandResult, Object> overrideCommandResult = new ConcurrentHashMap<>();
 
     private static final List<Provider<?>> providers = new CopyOnWriteArrayList<>();
 
@@ -48,6 +48,10 @@ public class JDACommand {
 
     @Getter
     private static boolean testing = false;
+
+    @Getter
+    @Setter
+    private MessageHandler messageHandler = new DefaultMessageHandler();
 
     private List<net.dv8tion.jda.api.interactions.commands.Command> jdaCmds = new ArrayList<>();
 
@@ -96,45 +100,6 @@ public class JDACommand {
      */
     public static JDACommand getInstance() {
         return instance;
-    }
-
-    /**
-     * override the message sent for every {@link CommandResult}
-     * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
-     * you can override the message and send a string, or an {@link MessageEmbed}
-     *
-     * @param commandResult
-     * @param message
-     * @return
-     */
-    public JDACommand overrideCommandResultMessage(CommandResult commandResult, String message) {
-        overrideCommandResult.put(commandResult, message);
-        return this;
-    }
-
-    /**
-     * override the message sent for every {@link CommandResult}
-     * for example: {@link CommandResult#ERROR} would usually return "There was an error processing the command!"
-     * you can override the message and send a string, or an {@link MessageEmbed}
-     *
-     * @param commandResult
-     * @param message
-     * @return
-     */
-    public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message) {
-        overrideCommandResult.put(commandResult, message);
-        return this;
-    }
-
-    /**
-     * unset a command result override {@link JDACommand#overrideCommandResultMessage)}
-     *
-     * @param commandResult
-     * @return
-     */
-    public JDACommand unsetCommandResultOverride(CommandResult commandResult) {
-        overrideCommandResult.remove(commandResult);
-        return this;
     }
 
     private void init() {
@@ -298,7 +263,7 @@ public class JDACommand {
                     }
                 });
             }
-        }else {
+        } else {
             jda.retrieveCommands().queue(list -> {
                 for (net.dv8tion.jda.api.interactions.commands.Command command : list) {
                     if (!allCmds.contains(command.getName())) {

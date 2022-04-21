@@ -1,7 +1,9 @@
 package net.badbird5907.jdacommand;
 
 import net.badbird5907.jdacommand.annotation.Command;
+import net.badbird5907.jdacommand.message.MessageHandler;
 import net.badbird5907.jdacommand.util.object.CommandWrapper;
+import net.badbird5907.jdacommand.util.object.SlashCommandReplyable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -9,6 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class CommandListener extends ListenerAdapter {
     public CommandListener() {
@@ -43,18 +46,16 @@ public class CommandListener extends ListenerAdapter {
                     if (c.permission().length != 0) {
                         if (e.getChannelType() == ChannelType.TEXT) {
                             Permission[] permissions = c.permission();
-                            EnumSet<Permission> set = e.getMember().getPermissions();
+                            EnumSet<Permission> set = Objects.requireNonNull(e.getMember()).getPermissions();
                             for (Permission permission : permissions) {
                                 if (!set.contains(permission)) {
+                                    MessageHandler.replyTo(new SlashCommandReplyable(e), JDACommand.getInstance().getMessageHandler().noPermission(e.getMember(), c, permission));
                                     return;
                                 }
                             }
                         } else return;
                     }
                     CommandWrapper wrapper = JDACommand.getCommandMap().get(command.toLowerCase());
-                    e.deferReply().queue(c1 -> {
-                    }, t -> {
-                    });
                     CommandManager.process(pair.getMethod(), e, wrapper.getObject(), c);
                 }
             });
