@@ -173,24 +173,24 @@ public class JDACommand {
      * Register a command
      * Example: registerCommand(MyCommand.class);
      *
-     * @param o Class
+     * @param o1 Classes
      */
-    public void registerCommand(Object o) {
+    public void registerCommand(Object... o1) {
         //if (alreadyInit.contains(o)) {
-        if (false) {
-            return;
-        }
-        for (Method m : o.getClass().getDeclaredMethods()) {
-            if (m.getAnnotation(Command.class) != null) {
-                Command command = m.getAnnotation(Command.class);
-                registerCommand(command, command.name(), m, o);
-                for (String alias : command.aliases()) {
-                    registerCommand(command, alias, m, o);
-                }
+        for (Object o : o1) {
+            for (Method m : o.getClass().getDeclaredMethods()) {
+                if (m.getAnnotation(Command.class) != null) {
+                    Command command = m.getAnnotation(Command.class);
+                    registerCommand(command, command.name(), m, o);
+                    for (String alias : command.aliases()) {
+                        registerCommand(command, alias, m, o);
+                    }
 
-                //alreadyInit.add(o);
+                    //alreadyInit.add(o);
+                }
             }
         }
+        finishRegister();
     }
 
     /**
@@ -221,6 +221,7 @@ public class JDACommand {
                 }
             }
         }
+        finishRegister();
     }
 
     private void registerCommand(Command command, String name, Method method, Object o) {
