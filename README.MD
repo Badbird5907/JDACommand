@@ -51,9 +51,9 @@ compileJava {
 # Wiki
 |  Name  |  Link  |
 |---|---|
-|  Main Wiki Page  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki)  |
-|  Getting Started  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki/Getting-Started)  |
-|  More Info About the @Command Annotation  |  [Here](https://github.com/Badbird-5907/JDACommand/wiki/The-@Command-Annotation---In-Depth)  |
+|  Main Wiki Page  |  [Here](https://github.com/Badbird5907/JDACommand/wiki)  |
+|  Getting Started  |  [Here](https://github.com/Badbird5907/JDACommand/wiki/Getting-Started)  |
+|  More Info About the @Command Annotation  |  [Here](https://github.com/Badbird5907/JDACommand/wiki/The-@Command-Annotation---In-Depth)  |
 
 
 # Usage:
@@ -61,10 +61,6 @@ compileJava {
 
 Initialization:
 ```java
-import net.badbird5907.jdacommand.JDACommand;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-
 public class YourMainClass {
     public static void main(String[] args) {
         JDA jda = JDABuilder.createDefault("token").build();
