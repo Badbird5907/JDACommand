@@ -56,7 +56,7 @@ public class JDACommand {
     @Setter
     private ReturnCallBack returnCallBack = null;
 
-    private static final Pattern COMMAND_REGEX = Pattern.compile("^[\\w-]{1,32}$",Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern COMMAND_REGEX = Pattern.compile("^[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai}]{1,32}$",Pattern.UNICODE_CHARACTER_CLASS);
 
     /**
      * Instantiate {@link JDACommand} with just prefix and {@link JDA} instance.
