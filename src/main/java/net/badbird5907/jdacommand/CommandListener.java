@@ -20,9 +20,15 @@ public class CommandListener extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
         try {
             String command = e.getName();
-            System.out.println("Command: " + e.getName());
+            if (e.getSubcommandName() != null) {
+                command += " " + e.getSubcommandName();
+            }
+            command = command.toLowerCase();
+            System.out.println("Command: " + e.getName() + " " + (e.getSubcommandName() != null ? e.getSubcommandName() : ""));
+            String finalCommand = command;
             JDACommand.getCommandMap().forEach((name, pair) -> {
-                if (e.getName().equalsIgnoreCase(name)) { //TODO custom error messages
+                System.out.println("Checking " + name + " | " + pair.getMethod().getName() + "()");
+                if (finalCommand.equalsIgnoreCase(name)) { //TODO custom error messages
                     Command c = pair.getCommand();
                     if (c.disable())
                         return;
@@ -51,7 +57,15 @@ public class CommandListener extends ListenerAdapter {
                             }
                         } else return;
                     }
-                    CommandWrapper wrapper = JDACommand.getCommandMap().get(command.toLowerCase());
+                    CommandWrapper wrapper;
+                    if (e.getSubcommandName() != null) {
+                        wrapper = JDACommand.getCommandMap().get(finalCommand.toLowerCase());
+                    }
+                    else wrapper = JDACommand.getCommandMap().get(finalCommand.toLowerCase());
+                    if (wrapper == null) {
+                        System.err.println("Command not found: " + finalCommand);
+                        return;
+                    }
                     e.deferReply().queue(c1 -> {
                     }, t -> {
                     });

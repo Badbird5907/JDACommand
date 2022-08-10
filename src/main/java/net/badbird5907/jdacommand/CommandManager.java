@@ -19,7 +19,11 @@ public class CommandManager {
         if (event.isCancelled())
             return;
         try {
-            CommandWrapper wrapper = JDACommand.getCommandMap().get(command.name().toLowerCase());
+            String effectiveName = e.getName().toLowerCase();
+            if (e.getSubcommandName() != null) {
+                effectiveName += " " + e.getSubcommandName();
+            }
+            CommandWrapper wrapper = JDACommand.getCommandMap().get(effectiveName);
             Object[] params = new Object[wrapper.getParams().length];
             CommandContext context = new CommandContext(e.getMember(), e, e.getMessageChannel(), e.getGuild());
             for (Pair<ParameterContext, Provider<?>> parameter : wrapper.getParameters()) {
@@ -54,6 +58,7 @@ public class CommandManager {
             }
         } catch (Exception illegalAccessException) {
             illegalAccessException.printStackTrace();
+            e.reply("An error occurred while processing this command.").queue();
         }
     }
 
