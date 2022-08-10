@@ -226,7 +226,7 @@ public class JDACommand {
             out.println("Registering command: " + name);
             if (command.disable() || method.isAnnotationPresent(Disable.class))
                 return;
-            if (!COMMAND_REGEX.matcher(name.toLowerCase()).matches()) {
+            if (false && !COMMAND_REGEX.matcher(name.toLowerCase()).matches()) {
                 throw new IllegalArgumentException("Command name must match regex: " + COMMAND_REGEX.pattern() + " see https://discord.com/developers/docs/interactions/application-commands for more info");
             }
             if (commandMap.containsKey(name) || name.isEmpty()) {
