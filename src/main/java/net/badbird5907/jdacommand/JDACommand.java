@@ -150,7 +150,8 @@ public class JDACommand {
                     new MemberContextProvider(),
                     new RoleContextProvider(),
                     new StringContextProvider(),
-                    new UserContextProvider()
+                    new UserContextProvider(),
+                    new IMentionableProvider()
             }) {
                 registerProvider(provider);
             }
