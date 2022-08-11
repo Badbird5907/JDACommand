@@ -5,7 +5,8 @@
 
 JavaDocs: [here](https://www.javadoc.io/doc/net.badbird5907/JDACommand/latest/index.html)
 
-
+# DO NOT USE THIS PROJECT
+There are multiple glaring issues with this project, and they will all be fixed in a upcoming rewrite.
 
 # Building
 1. Clone this repo `git clone https://github.com/Badbird-5907/JDACommand`
