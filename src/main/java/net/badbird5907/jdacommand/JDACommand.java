@@ -293,14 +293,14 @@ public class JDACommand {
                             if (data.isEmpty()) {
                                 action = action.addOptions(option);
                                 cWrapper.commandCreateAction = action;
-                                out.println("Added option: " + option.getName() + " to command: " + name);
+                                //out.println("Added option: " + option.getName() + " to command: " + name);
                             } else {
                                 for (SubcommandData subcommand : action.getSubcommands()) {
                                     action.getSubcommands().remove(subcommand);
                                     SubcommandData newData = subcommand.addOptions(option);
                                     action.getSubcommands().add(newData);
                                     cWrapper.commandCreateAction = action;
-                                    out.println("Added option: " + option.getName() + " to command: " + name + " | " + option.getType() + " (sub)");
+                                    //out.println("Added option: " + option.getName() + " to command: " + name + " | " + option.getType() + " (sub)");
                                 }
                             }
                         } else if (cWrapper.subcommandGroupData != null) {
@@ -321,15 +321,15 @@ public class JDACommand {
                     CommandCreateAction action = cWrapper.commandCreateAction;
                     String finalParent = parent;
                     String finalSub = sub;
-                    out.println("Registering command: " + action.getName());
+                    //out.println("Registering command: " + action.getName());
                     for (SubcommandData subcommand : action.getSubcommands()) {
-                        out.println(" - " + subcommand.getName());
+                        //out.println(" - " + subcommand.getName());
                         for (OptionData option : subcommand.getOptions()) {
-                            out.println("   - " + option.getName() + " | " + option.getType());
+                            //out.println("   - " + option.getName() + " | " + option.getType());
                         }
                     }
                     action.queue((c) -> {
-                        out.println("Registered command: " + c.getName() + " | " + c.getOptions().stream().map(option -> option.getName() + " | " + option.getType().name()).collect(Collectors.joining(", ")));
+                        //out.println("Registered command: " + c.getName() + " | " + c.getOptions().stream().map(option -> option.getName() + " | " + option.getType().name()).collect(Collectors.joining(", ")));
                         if (c.getSubcommands().isEmpty()) {
                             commandMap.put(c.getName().toLowerCase(), wrapper);
                         } else {
