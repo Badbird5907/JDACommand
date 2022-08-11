@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.lang.System.err;
 import static java.lang.System.out;
 
 public class JDACommand {
@@ -94,7 +93,6 @@ public class JDACommand {
      *
      * @param commandResult
      * @param message
-     * @return
      */
     public JDACommand overrideCommandResultMessage(CommandResult commandResult, String message) {
         overrideCommandResult.remove(commandResult);
@@ -109,7 +107,6 @@ public class JDACommand {
      *
      * @param commandResult
      * @param message
-     * @return
      */
     public JDACommand overrideCommandResultMessage(CommandResult commandResult, MessageEmbed message) {
         overrideCommandResult.remove(commandResult);
@@ -121,7 +118,6 @@ public class JDACommand {
      * unset a command result override {@link JDACommand#overrideCommandResultMessage)}
      *
      * @param commandResult
-     * @return
      */
     public JDACommand unsetCommandResultOverride(CommandResult commandResult) {
         overrideCommandResult.remove(commandResult);
@@ -228,7 +224,7 @@ public class JDACommand {
 
     private void registerCommand(Command command, String name, Method method, Object o) {
         try {
-            out.println("Registering command: " + name);
+            //out.println("Registering command: " + name);
             if (command.disable() || method.isAnnotationPresent(Disable.class))
                 return;
             if (commandMap.containsKey(name) || name.isEmpty()) {
@@ -242,7 +238,7 @@ public class JDACommand {
                 parent = split[0].toLowerCase();
                 sub = split[1].toLowerCase();
             }
-            List<SubWrapper> actions = new ArrayList<>();
+            List<CWrapper> actions = new ArrayList<>();
             for (Guild guild : jda.getGuilds()) {
                 boolean upsert = returnCallBack == null || returnCallBack.shouldUpsertCommand(guild);
                 if (upsert) {
@@ -252,7 +248,6 @@ public class JDACommand {
                             desc = method.getAnnotation(Description.class).value();
                         }
                         CommandCreateAction action = guild.upsertCommand(parent, desc);
-                        out.println("Upserting subcommand: " + sub + " in command: " + parent);
                         String n = parent;
                         if (!subMap.containsKey(n)) {
                             ArrayList<SubcommandData> list = new ArrayList<>();
@@ -264,23 +259,17 @@ public class JDACommand {
                             subMap.put(n, data);
                         }
                         List<SubcommandData> list = subMap.get(n);
-                        out.println("aaaaaa - " + list.stream().map(SubcommandData::getName).collect(Collectors.toList()) + " - " + subMap.size());
-                        subMap.forEach((k, v) -> {
-                            out.println("submap: " + k + " | " + v.stream().map(SubcommandData::getName).collect(Collectors.toList()));
-                        });
                         for (SubcommandData subcommandData : list) {
-                            out.println("Registering subcommand: " + subcommandData.getName() + " in command: " + parent);
                             if (action.getSubcommands().stream().anyMatch(subcommand -> subcommand.getName().equalsIgnoreCase(subcommandData.getName()))) {
                                 continue;
                             }
                             action = action.addSubcommands(subcommandData);
                         }
-                        err.println("bbbbbb - " + action.getSubcommands().stream().map(SubcommandData::getName).collect(Collectors.toList()) + " - " + list.size());
-                        actions.add(new SubWrapper(action));
+                        actions.add(new CWrapper(action));
                         //actions.add(new SubWrapper(action.addSubcommandGroups(groupData).addSubcommands(data)));
                     } else {
                         CommandCreateAction action = guild.upsertCommand(name.toLowerCase(), command.description());
-                        actions.add(new SubWrapper(action));
+                        actions.add(new CWrapper(action));
                     }
                 }
             }
@@ -293,28 +282,29 @@ public class JDACommand {
                     throw new IllegalArgumentException("Could not find a Parameter Provider for " + param.getType().getName() + " in " + method.getName());
                 }
                 ParameterContext pCtx = new ParameterContext(params, i, param, param.getDeclaredAnnotations());
-                System.out.println("Registering parameter: " + pCtx.getName() + " in command: " + name + " with type " + param.getType());
                 if (provider.getOptionData(pCtx) != null) {
-                    for (SubWrapper subWrapper : actions) {
+                    for (CWrapper cWrapper : actions) {
                         OptionData option = provider.getOptionData(pCtx);
                         if (!option.isRequired() && pCtx.isRequired())
                             option.setRequired(true);
-                        if (subWrapper.commandCreateAction != null) {
-                            CommandCreateAction action = subWrapper.commandCreateAction;
+                        if (cWrapper.commandCreateAction != null) {
+                            CommandCreateAction action = cWrapper.commandCreateAction;
                             List<SubcommandData> data = action.getSubcommands();
                             if (data.isEmpty()) {
-                                out.println("aaaa1");
                                 action = action.addOptions(option);
-                                subWrapper.commandCreateAction = action;
-                            }
-                            else {
-                                out.println("aaaa2");
+                                cWrapper.commandCreateAction = action;
+                                out.println("Added option: " + option.getName() + " to command: " + name);
+                            } else {
                                 for (SubcommandData subcommand : action.getSubcommands()) {
-                                    SubcommandData newCmd = subcommand.addOptions(option);
+                                    action.getSubcommands().remove(subcommand);
+                                    SubcommandData newData = subcommand.addOptions(option);
+                                    action.getSubcommands().add(newData);
+                                    cWrapper.commandCreateAction = action;
+                                    out.println("Added option: " + option.getName() + " to command: " + name + " | " + option.getType() + " (sub)");
                                 }
                             }
-                        } else if (subWrapper.subcommandGroupData != null) {
-                            SubcommandGroupData groupData = subWrapper.subcommandGroupData;
+                        } else if (cWrapper.subcommandGroupData != null) {
+                            SubcommandGroupData groupData = cWrapper.subcommandGroupData;
                             for (SubcommandData subcommand : groupData.getSubcommands()) {
                                 if (subcommand.getName().equalsIgnoreCase(sub)) {
                                     subcommand.addOptions(option);
@@ -326,31 +316,35 @@ public class JDACommand {
                 parameters.add(new Pair<>(pCtx, provider));
             }
             CommandWrapper wrapper = new CommandWrapper(command, name.toLowerCase(), method, o, params, parameters);
-            for (SubWrapper subWrapper : actions) {
-                if (subWrapper.commandCreateAction != null) {
-                    CommandCreateAction action = subWrapper.commandCreateAction;
-                    out.println("c");
+            for (CWrapper cWrapper : actions) {
+                if (cWrapper.commandCreateAction != null) {
+                    CommandCreateAction action = cWrapper.commandCreateAction;
                     String finalParent = parent;
                     String finalSub = sub;
+                    out.println("Registering command: " + action.getName());
+                    for (SubcommandData subcommand : action.getSubcommands()) {
+                        out.println(" - " + subcommand.getName());
+                        for (OptionData option : subcommand.getOptions()) {
+                            out.println("   - " + option.getName() + " | " + option.getType());
+                        }
+                    }
                     action.queue((c) -> {
+                        out.println("Registered command: " + c.getName() + " | " + c.getOptions().stream().map(option -> option.getName() + " | " + option.getType().name()).collect(Collectors.joining(", ")));
                         if (c.getSubcommands().isEmpty()) {
-                            System.out.println("Registered command " + c);
                             commandMap.put(c.getName().toLowerCase(), wrapper);
                         } else {
                             String s = finalParent.toLowerCase() + " " + finalSub.toLowerCase();
-                            System.out.println("Registered subcommand " + s + " | " + wrapper.getMethod().getName() + "()");
                             commandMap.put(s, wrapper);
                         }
                     });
-                } else if (subWrapper.subcommandGroupData != null) {
-                    SubcommandGroupData groupData = subWrapper.subcommandGroupData;
+                } else if (cWrapper.subcommandGroupData != null) {
+                    SubcommandGroupData groupData = cWrapper.subcommandGroupData;
                     for (SubcommandData subcommand : groupData.getSubcommands()) {
                         //System.out.println("Registered subcommand " + subcommand);
                         commandMap.put(parent.toLowerCase() + " " + subcommand.getName().toLowerCase(), wrapper);
                     }
                 }
             }
-            System.out.println("Done Registering command " + name);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -393,20 +387,20 @@ public class JDACommand {
 
     @Getter
     @Setter
-    private class SubWrapper {
+    private class CWrapper {
         private CommandCreateAction commandCreateAction;
         private SubcommandGroupData subcommandGroupData;
 
-        public SubWrapper(CommandCreateAction commandCreateAction, SubcommandGroupData subcommandGroupData) {
+        public CWrapper(CommandCreateAction commandCreateAction, SubcommandGroupData subcommandGroupData) {
             this.commandCreateAction = commandCreateAction;
             this.subcommandGroupData = subcommandGroupData;
         }
 
-        public SubWrapper(CommandCreateAction commandCreateAction) {
+        public CWrapper(CommandCreateAction commandCreateAction) {
             this.commandCreateAction = commandCreateAction;
         }
 
-        public SubWrapper(SubcommandGroupData subcommandGroupData) {
+        public CWrapper(SubcommandGroupData subcommandGroupData) {
             this.subcommandGroupData = subcommandGroupData;
         }
     }
