@@ -1,4 +1,4 @@
-h  JDACommand
+# JDACommand
 
 ## Slash Commands rewrite
 
