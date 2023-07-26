@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @AutoInstantiate
-public @interface SlashCommand {
+public @interface SubGroup {
     String name();
     String description() default "";
-    boolean guildOnly() default true;
+    String parent() default "";
+    boolean inheritAnnotations() default true;
 }

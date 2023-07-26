@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 public @interface Arg {
 
     String value();
-
+    String description();
+    boolean required() default true;
 }

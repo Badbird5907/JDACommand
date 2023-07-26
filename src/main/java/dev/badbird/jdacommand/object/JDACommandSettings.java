@@ -13,12 +13,13 @@ public class JDACommandSettings {
     private JDA jda;
     private List<String> packageScan;
     private boolean waitForJda = true;
+    private boolean registerDefaultProviders = true;
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
         return _builder().jda(jda);
     }
 
-    public class JDACommandSettingsBuilder {
+    public static class JDACommandSettingsBuilder {
         public void scanPackage(String s) {
             packageScan.add(s);
         }

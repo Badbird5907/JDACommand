@@ -8,13 +8,17 @@ import net.dv8tion.jda.api.JDABuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 
 public class TestBot {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         String token = new String(Files.readAllBytes(new File("token.txt").toPath()));
         JDA jda = JDABuilder.createDefault(token).build();
         JDACommand jdaCommand = new JDACommand(JDACommandSettings.builder(jda).create());
+        jdaCommand.registerDefaultProviders();
         jdaCommand.registerCmd(new TestCommand());
+        jda.awaitReady();
+        jdaCommand.commitCommands();
     }
 }

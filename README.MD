@@ -9,3 +9,6 @@
  - Should be able to unregister slash commands from servers
  - Slash commands should be registered to servers when the bot starts
  - Should have sub commands too
+ - Should have default permissions 
+ - https://jda.wiki/using-jda/interactions/#slash-commands
+ - Maybe user context menus too
