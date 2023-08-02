@@ -17,6 +17,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanners;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -55,25 +62,34 @@ public class JDACommand {
         }
     }
 
-    public void registerPackage(String packageName, boolean deep) {
-
+    public JDACommand registerPackage(String packageName) {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setScanners(Scanners.SubTypes.filterResultsBy(new FilterBuilder()))
+                .addUrls(ClasspathHelper.forPackage(packageName))
+                .filterInputsBy(new FilterBuilder().add(s -> s.startsWith(packageName))));
+        for (Class<?> aClass : reflections.getSubTypesOf(Object.class)) {
+            registerCmd(aClass);
+        }
+        return this;
     }
 
-    public void registerDefaultProviders() {
+    public JDACommand registerDefaultProviders() {
         registerProvider(String.class, new StringProvider());
         registerProvider(Boolean.class, new BooleanProvider());
         registerProvider(ExecutionContext.class, new ExecutionContext.Provider());
         NumberProvider.registerAll(this);
         AllMentionablesProvider.registerAll(this);
         MiscProviders.registerAll(this);
+        return this;
     }
 
-    public void registerProvider(Class<?> clazz, Provider<?> provider) {
+    public JDACommand registerProvider(Class<?> clazz, Provider<?> provider) {
         argumentProviders.put(Primitives.wrap(clazz), provider);
+        return this;
     }
 
-    public void registerCmd(Object object) {
-        if (object == null) return;
+    public JDACommand registerCmd(Object object) {
+        if (object == null) return this;
         // if this is a class, instantiate it
         if (object instanceof Class<?>) {
             Class<?> clazz = (Class<?>) object;
@@ -84,7 +100,8 @@ public class JDACommand {
                     e.printStackTrace();
                 }
             } else {
-                throw new IllegalArgumentException("Class " + clazz.getName() + " is not annotated with AutoInstantiate, and cannot be registered.");
+                // throw new IllegalArgumentException("Class " + clazz.getName() + " is not annotated with AutoInstantiate, and cannot be registered.");
+                return this;
             }
         }
         registerLast.remove(object);
@@ -103,7 +120,7 @@ public class JDACommand {
             parentInfo = commandMap.get(name.toLowerCase());
             if (parentInfo == null) { // hasn't been registered yet, defer
                 registerLast.add(object);
-                return;
+                return this;
             }
             parent = parentInfo.getAnnotation();
             classHasMainCommand = true;
@@ -122,7 +139,7 @@ public class JDACommand {
             else parentInfo = commandMap.get(subGroup.parent().toLowerCase());
             if (parentInfo == null) {
                 registerLast.add(object);
-                return;
+                return this;
             }
             parent = parentInfo.getAnnotation();
             if (subGroup.inheritAnnotations()) {
@@ -211,6 +228,7 @@ public class JDACommand {
                 }
             }
         }
+        return this;
     }
 
     public boolean shouldAutoInstantiate(Class<?> clazz) { // TODO add a configurable callback for this
