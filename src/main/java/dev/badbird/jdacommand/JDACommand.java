@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 
 @Getter
 public class JDACommand {
-    private final JDA jda;
     private final Map<String, CommandInfo> commandMap = new ConcurrentHashMap<>();
     private final Map<Class<?>, Provider<?>> argumentProviders = new ConcurrentHashMap<>();
     private final List<Object> registerLast = new ArrayList<>();
@@ -48,14 +47,16 @@ public class JDACommand {
 
     public JDACommand(JDACommandSettings settings) {
         this.settings = settings;
-        jda = settings.getJda();
-        jda.addEventListener(new CommandListener(this));
+        if (settings.getShardManager() != null)
+            settings.getShardManager().addEventListener(new CommandListener(this));
+        else if (settings.getJda() != null)
+            settings.getJda().addEventListener(new CommandListener(this));
         if (settings.isRegisterDefaultProviders()) {
             registerDefaultProviders();
         }
-        if (settings.isWaitForJda()) {
+        if (settings.isWaitForJda() && settings.getJda() != null) {
             try {
-                jda.awaitReady();
+                settings.getJda().awaitReady();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -278,6 +279,26 @@ public class JDACommand {
         return cachedGuildCommands = Pair.of(slashCommands.toArray(new SlashCommandData[0]), guildSpecific.toArray(new CommandInfo[0]));
     }
 
+    public void commitCommands(JDA jda) {
+        for (Guild guild : jda.getGuilds()) {
+            commitCommands(guild);
+        }
+        if (!autoRegisteredGlobal) {
+            commitGlobal();
+            autoRegisteredGlobal = true;
+        }
+    }
+
+    public void commitCommands() {
+        if (settings.getShardManager() != null) {
+            settings.getShardManager().getShards().forEach(this::commitCommands);
+        } else if (settings.getJda() != null) {
+            commitCommands(settings.getJda());
+        } else {
+            throw new IllegalStateException("No shard manager or jda instance found");
+        }
+    }
+
     public void commitCommands(Guild guild) { // actually register the commands to discord
         registerLastCommands();
         System.out.println("Committing commands for guild " + guild.getName());
@@ -311,20 +332,18 @@ public class JDACommand {
         });
     }
 
-    public void commitCommands() {
-        for (Guild guild : jda.getGuilds()) {
-            commitCommands(guild);
-        }
-        if (!autoRegisteredGlobal) {
-            commitGlobal();
-            autoRegisteredGlobal = true;
-        }
-    }
-
     public void commitGlobal() {
         List<CommandInfo> globalCommands = commandMap.values().stream().filter(
                 cmd -> !cmd.getAnnotation().guildOnly()
         ).collect(Collectors.toList());
+        JDA jda;
+        if (settings.getShardManager() != null) {
+            jda = settings.getShardManager().getShards().get(0);
+        } else if (settings.getJda() != null) {
+            jda = settings.getJda();
+        } else {
+            throw new IllegalStateException("No shard manager or jda instance found");
+        }
         CommandListUpdateAction commandListUpdateAction = jda.updateCommands();
         for (CommandInfo globalCommand : globalCommands) {
             commandListUpdateAction = commandListUpdateAction.addCommands(globalCommand.generateCommand());
