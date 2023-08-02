@@ -11,7 +11,6 @@ import java.util.List;
 public class JDACommandSettings {
     @NonNull
     private JDA jda;
-    private List<String> packageScan;
     @Builder.Default
     private boolean waitForJda = true;
     @Builder.Default
@@ -24,9 +23,6 @@ public class JDACommandSettings {
     }
 
     public static class JDACommandSettingsBuilder {
-        public void scanPackage(String s) {
-            packageScan.add(s);
-        }
         public JDACommandSettings create() { // workaround for the accesslevel set to private
             return build();
         }

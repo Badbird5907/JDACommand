@@ -55,6 +55,10 @@ public class JDACommand {
         }
     }
 
+    public void registerPackage(String packageName, boolean deep) {
+
+    }
+
     public void registerDefaultProviders() {
         registerProvider(String.class, new StringProvider());
         registerProvider(Boolean.class, new BooleanProvider());

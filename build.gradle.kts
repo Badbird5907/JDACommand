@@ -2,7 +2,8 @@ plugins {
     id("java")
     id("maven-publish")
     id("signing")
-    id("io.freefair.lombok") version "8.0.1"
+    id("io.freefair.lombok") version "8.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "dev.badbird"
@@ -15,14 +16,23 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-
-    implementation("net.dv8tion:JDA:5.0.0-beta.11")
+    compileOnly("net.dv8tion:JDA:5.0.0-beta.11")
+    implementation("org.reflections:reflections:0.10.2") {
+        exclude("org.slf4j", "slf4j-api")
+    }
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+tasks.build {
+    dependsOn("shadowJar")
+}
+tasks.shadowJar {
+    archiveClassifier.set("")
+    relocate("org.reflections", "dev.badbird.jdacommand.relocate.reflections")
+    relocate("javassist", "dev.badbird.jdacommand.relocate.reflections.javassist")
+    relocate("javax", "dev.badbird.jdacommand.relocate.reflections.javax")
 }
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
