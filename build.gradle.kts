@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.badbird"
-version = "0.0.1-DEV"
+version = "5.0.0-DEV"
 description = "Annotation based slash command framework for JDA"
 
 repositories {
