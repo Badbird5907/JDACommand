@@ -1,9 +1,16 @@
 package dev.badbird.jdacommand;
 
 import dev.badbird.jdacommand.annotation.*;
-import dev.badbird.jdacommand.object.*;
+import dev.badbird.jdacommand.object.CommandListener;
+import dev.badbird.jdacommand.object.ExecutionContext;
+import dev.badbird.jdacommand.object.JDACommandSettings;
+import dev.badbird.jdacommand.object.ParameterInfo;
+import dev.badbird.jdacommand.object.command.BaseCommandInfo;
+import dev.badbird.jdacommand.object.command.impl.CommandInfo;
+import dev.badbird.jdacommand.object.command.impl.SubGroupInfo;
 import dev.badbird.jdacommand.provider.Provider;
-import dev.badbird.jdacommand.provider.impl.StringProvider;
+import dev.badbird.jdacommand.provider.impl.*;
+import dev.badbird.jdacommand.util.Primitives;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -19,18 +26,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Getter
 public class JDACommand {
     private final JDA jda;
     private final Map<String, CommandInfo> commandMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Provider<?>> argumentProviders = new ConcurrentHashMap<>();
     private final List<Object> registerLast = new ArrayList<>();
-    private final Map<Class<?>, Provider<?>> argumentProviders = new HashMap<>();
     private boolean autoRegisteredGlobal = false;
     private Pair<SlashCommandData[], CommandInfo[]> cachedGuildCommands;
     private List<String> registered = new ArrayList<>(); // prevent stack overflow
+    private JDACommandSettings settings;
 
     public JDACommand(JDACommandSettings settings) {
+        this.settings = settings;
         jda = settings.getJda();
         jda.addEventListener(new CommandListener(this));
         if (settings.isRegisterDefaultProviders()) {
@@ -46,13 +56,23 @@ public class JDACommand {
     }
 
     public void registerDefaultProviders() {
-        getArgumentProviders().put(String.class, new StringProvider());
+        registerProvider(String.class, new StringProvider());
+        registerProvider(Boolean.class, new BooleanProvider());
+        registerProvider(ExecutionContext.class, new ExecutionContext.Provider());
+        NumberProvider.registerAll(this);
+        AllMentionablesProvider.registerAll(this);
+        MiscProviders.registerAll(this);
+    }
+
+    public void registerProvider(Class<?> clazz, Provider<?> provider) {
+        argumentProviders.put(Primitives.wrap(clazz), provider);
     }
 
     public void registerCmd(Object object) {
         if (object == null) return;
         // if this is a class, instantiate it
-        if (object instanceof Class<?> clazz) {
+        if (object instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) object;
             if (shouldAutoInstantiate(clazz)) {
                 try {
                     object = clazz.getDeclaredConstructor().newInstance();
@@ -105,13 +125,14 @@ public class JDACommand {
                 distributedAnnotations.putAll(parentInfo.getAnnotations());
             }
         }
-        // annotations on the class itself take precedence over distributed annotations
-        for (Annotation annotation : object.getClass().getDeclaredAnnotations()) {
-            if (annotation.getClass().isAnnotationPresent(DistributeOnMethods.class)) {
+        // annotations on the class itself take precedence over inherited annotations
+        for (Annotation annotation : object.getClass().getAnnotations()) {
+            if (annotation.annotationType().isAnnotationPresent(DistributeOnMethods.class)) {
+                System.out.println("Distributing annotation " + annotation.annotationType().getName());
                 distributedAnnotations.put(annotation.annotationType(), annotation);
             }
         }
-        if (classHasMainCommand && extendParent == null && subGroup == null) {
+        if (classHasMainCommand && extendParent == null && subGroup == null) { // register root command
             boolean subCommandsFound = false;
             for (Method declaredMethod : object.getClass().getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(SlashCommand.class)) {
@@ -137,6 +158,7 @@ public class JDACommand {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(SlashCommand.class)) {
                 SlashCommand slashCommand = method.getAnnotation(SlashCommand.class);
+                System.out.println("Found command " + slashCommand.name());
                 if (slashCommand.name().contains(" ")) { // TODO: register as subcommand/group
                     throw new IllegalArgumentException("Command " + slashCommand.name() + " contains spaces, which is not allowed.");
                 }
@@ -144,11 +166,10 @@ public class JDACommand {
                 for (Parameter parameter : method.getParameters()) {
                     parameters.add(new ParameterInfo(parameter, this));
                 }
-                Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
+                Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>(distributedAnnotations);
                 for (Annotation declaredAnnotation : method.getDeclaredAnnotations()) {
                     annotations.put(declaredAnnotation.annotationType(), declaredAnnotation);
                 }
-                annotations.putAll(distributedAnnotations);
                 CommandInfo commandInfo = new CommandInfo(slashCommand, object);
                 commandInfo.setAnnotations(annotations);
                 commandInfo.setMethod(method);
@@ -164,7 +185,7 @@ public class JDACommand {
                 } else {
                     BaseCommandInfo subGroupInfo = parentInfo.getSubCommands().get(subGroup.name());
                     if (subGroupInfo == null) {
-                        subGroupInfo = new SubGroupInfo(subGroup, object, parentInfo);
+                        subGroupInfo = new SubGroupInfo(subGroup, parentInfo);
                         parentInfo.getSubCommands().put(subGroup.name().toLowerCase(), subGroupInfo);
                     } else if (!(subGroupInfo instanceof SubGroupInfo)) {
                         throw new IllegalArgumentException("Found conflicting subcommands/groups named " + subGroupInfo.getName());
@@ -281,11 +302,26 @@ public class JDACommand {
     public void commitGlobal() {
         List<CommandInfo> globalCommands = commandMap.values().stream().filter(
                 cmd -> !cmd.getAnnotation().guildOnly()
-        ).toList();
+        ).collect(Collectors.toList());
         CommandListUpdateAction commandListUpdateAction = jda.updateCommands();
         for (CommandInfo globalCommand : globalCommands) {
             commandListUpdateAction = commandListUpdateAction.addCommands(globalCommand.generateCommand());
         }
         commandListUpdateAction.queue();
+    }
+
+    public BaseCommandInfo resolveCommand(String[] searchList) {
+        BaseCommandInfo commandInfo = null;
+        for (String s : searchList) {
+            if (commandInfo == null) {
+                commandInfo = commandMap.get(s.toLowerCase());
+            } else {
+                commandInfo = commandInfo.getSubCommands().get(s.toLowerCase());
+            }
+            if (commandInfo == null) {
+                break;
+            }
+        }
+        return commandInfo;
     }
 }

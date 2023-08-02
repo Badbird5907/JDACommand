@@ -1,7 +1,6 @@
 package dev.badbird.jdacommand.object;
 
 import dev.badbird.jdacommand.annotation.Arg;
-import dev.badbird.jdacommand.annotation.Optional;
 import dev.badbird.jdacommand.annotation.Required;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,25 +15,25 @@ import java.util.List;
 public class ParameterContext {
     private final Parameter[] allParameters;
     private final int parameterIndex;
-    private final Parameter parameter;
+    private final ParameterInfo parameterInfo;
     private final String name;
     private final List<? extends Annotation> annotations;
     private final boolean required;
 
-    public ParameterContext(Parameter[] allParameters, int parameterIndex, Parameter parameter, Annotation[] annotations) {
+    public ParameterContext(Parameter[] allParameters, int parameterIndex, ParameterInfo parameterInfo, Annotation[] annotations) {
         this.allParameters = allParameters;
         this.parameterIndex = parameterIndex;
-        this.parameter = parameter;
+        this.parameterInfo = parameterInfo;
         this.annotations = Arrays.asList(annotations);
-        this.name = parameter.getName().toLowerCase();
-        this.required = parameter.isAnnotationPresent(Required.class);
-        if (required && parameter.isAnnotationPresent(Optional.class)) {
+        this.name = parameterInfo.getParameter().getName().toLowerCase();
+        this.required = parameterInfo.getParameter().isAnnotationPresent(Required.class);
+        if (required && parameterInfo.getParameter().isAnnotationPresent(Arg.class) && !parameterInfo.getParameter().getAnnotation(Arg.class).required()) {
             throw new IllegalArgumentException("Parameter cannot be both required and optional");
         }
     }
 
     public boolean hasAnnotation(Class<? extends Annotation> annotation) {
-        return parameter.isAnnotationPresent(annotation);
+        return parameterInfo.getParameter().isAnnotationPresent(annotation);
     }
 
     public String getArgName() {
@@ -42,7 +41,10 @@ public class ParameterContext {
     }
 
     public <T extends Annotation> T getAnnotation(Class<T> annotation) {
-        return parameter.getAnnotation(annotation);
+        return parameterInfo.getParameter().getAnnotation(annotation);
     }
 
+    public Parameter getParameter() {
+        return parameterInfo.getParameter();
+    }
 }

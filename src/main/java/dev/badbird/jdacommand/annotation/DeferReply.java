@@ -7,9 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AutoInstantiate
-public @interface SlashCommand {
-    String name();
-    String description() default "No description provided";
-    boolean guildOnly() default true;
+@DistributeOnMethods
+public @interface DeferReply {
+    boolean value() default true;
 }

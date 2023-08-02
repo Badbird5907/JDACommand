@@ -1,6 +1,7 @@
 package dev.badbird.jdacommand.example;
 
 import dev.badbird.jdacommand.JDACommand;
+import dev.badbird.jdacommand.example.commands.AnotherCommand;
 import dev.badbird.jdacommand.example.commands.TestCommand;
 import dev.badbird.jdacommand.object.JDACommandSettings;
 import net.dv8tion.jda.api.JDA;
@@ -16,8 +17,8 @@ public class TestBot {
         String token = new String(Files.readAllBytes(new File("token.txt").toPath()));
         JDA jda = JDABuilder.createDefault(token).build();
         JDACommand jdaCommand = new JDACommand(JDACommandSettings.builder(jda).create());
-        jdaCommand.registerDefaultProviders();
-        jdaCommand.registerCmd(new TestCommand());
+        // jdaCommand.registerCmd(new TestCommand());
+        jdaCommand.registerCmd(new AnotherCommand());
         jda.awaitReady();
         jdaCommand.commitCommands();
     }

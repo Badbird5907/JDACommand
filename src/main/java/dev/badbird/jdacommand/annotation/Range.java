@@ -5,11 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AutoInstantiate
-public @interface SlashCommand {
-    String name();
-    String description() default "No description provided";
-    boolean guildOnly() default true;
+@Target(ElementType.PARAMETER)
+public @interface Range {
+    long minLong() default Long.MIN_VALUE;
+    long maxLong() default Long.MAX_VALUE;
+    double minDouble() default Double.MIN_VALUE;
+    double maxDouble() default Double.MAX_VALUE;
 }

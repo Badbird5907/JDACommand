@@ -1,6 +1,7 @@
-package dev.badbird.jdacommand.object;
+package dev.badbird.jdacommand.object.command.impl;
 
 import dev.badbird.jdacommand.annotation.SubGroup;
+import dev.badbird.jdacommand.object.command.BaseCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
@@ -9,11 +10,9 @@ import java.util.List;
 
 public class SubGroupInfo extends BaseCommandInfo {
     private final SubGroup annotation;
-    private final Object instance;
 
-    public SubGroupInfo(SubGroup annotation, Object instance, CommandInfo parent) {
+    public SubGroupInfo(SubGroup annotation, CommandInfo parent) {
         this.annotation = annotation;
-        this.instance = instance;
         this.parent = parent;
     }
 

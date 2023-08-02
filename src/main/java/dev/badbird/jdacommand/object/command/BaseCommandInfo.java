@@ -1,4 +1,4 @@
-package dev.badbird.jdacommand.object;
+package dev.badbird.jdacommand.object.command;
 
 import lombok.Getter;
 import lombok.Setter;

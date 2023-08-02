@@ -12,8 +12,12 @@ public class JDACommandSettings {
     @NonNull
     private JDA jda;
     private List<String> packageScan;
+    @Builder.Default
     private boolean waitForJda = true;
+    @Builder.Default
     private boolean registerDefaultProviders = true;
+    @Builder.Default
+    private boolean commitOnJoin = true;
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
         return _builder().jda(jda);
