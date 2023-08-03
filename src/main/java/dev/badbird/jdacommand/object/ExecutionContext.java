@@ -7,6 +7,7 @@ import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -53,15 +54,23 @@ public class ExecutionContext {
     }
 
     public void reply(String message) {
+        reply(message, false);
+    }
+    public void reply(String message, boolean ephemeral) {
         if (event.isAcknowledged())
-            event.getHook().sendMessage(message).queue();
-        else event.reply(message).queue();
+            event.getHook().sendMessage(message).setEphemeral(ephemeral).queue();
+        else event.reply(message).setEphemeral(ephemeral).queue();
     }
 
     public void reply(MessageEmbed embed, MessageEmbed... embeds) {
         if (event.isAcknowledged())
             event.getHook().sendMessageEmbeds(embed, embeds).queue();
         else event.replyEmbeds(embed, embeds).queue();
+    }
+    public void replyEphemeralEmbeds(MessageEmbed embed, MessageEmbed... embeds) {
+        if (event.isAcknowledged())
+            event.getHook().sendMessageEmbeds(embed, embeds).setEphemeral(true).queue();
+        else event.replyEmbeds(embed, embeds).setEphemeral(true).queue();
     }
 
     public void setOriginal(String message) {
@@ -74,6 +83,14 @@ public class ExecutionContext {
 
     public void deferReply() {
         event.deferReply().queue();
+    }
+
+    public User getUser() {
+        return event.getUser();
+    }
+
+    public Member getMember() {
+        return event.getMember();
     }
 
     public static class Provider implements dev.badbird.jdacommand.provider.Provider<ExecutionContext> {

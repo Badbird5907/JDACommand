@@ -31,7 +31,7 @@ public class CommandListener extends ListenerAdapter {
             return;
         }
         ExecutableCommand command = (ExecutableCommand) commandInfo;
-        command.execute(event);
+        command.execute(event, jdaCommand);
         /*
         event.reply("Command string: " +  event.getCommandString() + "\n"
                 + "Subcommand name: " + event.getSubcommandName() + "\n"

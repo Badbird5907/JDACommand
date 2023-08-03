@@ -1,5 +1,6 @@
 package dev.badbird.jdacommand.object.command.impl;
 
+import dev.badbird.jdacommand.JDACommand;
 import dev.badbird.jdacommand.annotation.DeferReply;
 import dev.badbird.jdacommand.annotation.SlashCommand;
 import dev.badbird.jdacommand.object.ExecutionContext;
@@ -7,9 +8,11 @@ import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.BaseCommandInfo;
 import dev.badbird.jdacommand.object.command.ExecutableCommand;
 import dev.badbird.jdacommand.util.ParameterUtil;
+import dev.badbird.jdacommand.util.ReturnableTypeCallback;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -95,12 +98,17 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event, JDACommand jdaCommand) {
         if (getAnnotation().guildOnly() && event.getGuild() == null) {
             event.reply("This command can only be used in a guild!").queue();
             return;
         }
         ExecutionContext context = new ExecutionContext(event, this);
+        for (ReturnableTypeCallback<Boolean, ExecutionContext> preProcessor : jdaCommand.getSettings().getPreProcessors()) {
+            if (!preProcessor.call(context)) {
+                return;
+            }
+        }
         if (isAnnotationPresent(DeferReply.class)) {
             if (getAnnotation(DeferReply.class).value()) {
                 System.out.println("Deferring reply");
@@ -110,6 +118,11 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
         Object[] args = ParameterUtil.resolveParameters(event, parameters.toArray(new ParameterInfo[0]), context);
         try {
             method.invoke(instance, args);
+            for (ReturnableTypeCallback<Boolean, ExecutionContext> postProcessor : jdaCommand.getSettings().getPostProcessors()) {
+                if (!postProcessor.call(context)) {
+                    return;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

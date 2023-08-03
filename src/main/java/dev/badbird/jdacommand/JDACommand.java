@@ -14,6 +14,7 @@ import dev.badbird.jdacommand.util.Primitives;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -25,12 +26,14 @@ import org.reflections.util.FilterBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 @Getter
 public class JDACommand {
@@ -40,6 +43,7 @@ public class JDACommand {
     private boolean autoRegisteredGlobal = false;
     private Pair<SlashCommandData[], CommandInfo[]> cachedGuildCommands;
     private List<String> registered = new ArrayList<>(); // prevent stack overflow
+    @Getter
     private JDACommandSettings settings;
 
     public JDACommand(JDACommandSettings settings) {
@@ -95,7 +99,8 @@ public class JDACommand {
                 try {
                     object = clazz.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // e.printStackTrace();
+                    return this;
                 }
             } else {
                 // throw new IllegalArgumentException("Class " + clazz.getName() + " is not annotated with AutoInstantiate, and cannot be registered.");
@@ -227,6 +232,14 @@ public class JDACommand {
     }
 
     public boolean shouldAutoInstantiate(Class<?> clazz) { // TODO add a configurable callback for this
+        if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnnotation()) {
+            return false;
+        }
+        try {
+            clazz.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
         if (clazz.isAnnotationPresent(AutoInstantiate.class)) {
             return clazz.getDeclaredAnnotation(AutoInstantiate.class).value();
         }
