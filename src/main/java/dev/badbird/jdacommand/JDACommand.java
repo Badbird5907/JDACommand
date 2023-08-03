@@ -18,9 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanners;
-import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -33,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Getter
 public class JDACommand {
@@ -130,7 +127,6 @@ public class JDACommand {
             }
         }
         if (subGroup != null) {
-            System.out.println("Registering subgroup " + subGroup.name());
             classHasMainCommand = isSubClass && object.getClass().getDeclaringClass().isAnnotationPresent(SlashCommand.class);
             if (!classHasMainCommand && subGroup.name().isEmpty()) {
                 throw new IllegalArgumentException("Class " + object.getClass().getName() + " has a SubGroup annotation, but isn't a subclass of a parent annotation, and doesn't declare a parent command.");
@@ -150,7 +146,6 @@ public class JDACommand {
         // annotations on the class itself take precedence over inherited annotations
         for (Annotation annotation : object.getClass().getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(DistributeOnMethods.class)) {
-                System.out.println("Distributing annotation " + annotation.annotationType().getName());
                 distributedAnnotations.put(annotation.annotationType(), annotation);
             }
         }
@@ -180,7 +175,6 @@ public class JDACommand {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(SlashCommand.class)) {
                 SlashCommand slashCommand = method.getAnnotation(SlashCommand.class);
-                System.out.println("Found command " + slashCommand.name());
                 if (slashCommand.name().contains(" ")) { // TODO: register as subcommand/group
                     throw new IllegalArgumentException("Command " + slashCommand.name() + " contains spaces, which is not allowed.");
                 }
@@ -248,6 +242,19 @@ public class JDACommand {
                 }
             }
         }
+        for (Method declaredMethod : clazz.getDeclaredMethods()) {
+            for (Annotation declaredAnnotation : declaredMethod.getDeclaredAnnotations()) {
+                if (declaredAnnotation.annotationType().isAnnotationPresent(AutoInstantiate.class)) {
+                    AutoInstantiate autoInstantiate = declaredAnnotation.annotationType().getDeclaredAnnotation(AutoInstantiate.class);
+                    if (autoInstantiate.value()) {
+                        should = true;
+                    }
+                    if (autoInstantiate.forceStop()) {
+                        return false;
+                    }
+                }
+            }
+        }
         return should;
     }
 
@@ -262,34 +269,41 @@ public class JDACommand {
 
     public Pair<SlashCommandData[], CommandInfo[]> generateGuildCommands() {
         if (cachedGuildCommands != null) return cachedGuildCommands;
-        List<SlashCommandData> slashCommands = new ArrayList<>();
+        List<SlashCommandData> globalCommands = new ArrayList<>();
         List<CommandInfo> guildSpecific = new ArrayList<>();
-        System.out.println("Generating guild commands - " + commandMap.size());
         for (CommandInfo commandInfo : commandMap.values()) {
-            if (!commandInfo.isRootCommand() || !commandInfo.getAnnotation().guildOnly()) {
-                System.out.println("Skipping command " + commandInfo.getName());
+            if (!commandInfo.isRootCommand()) {
                 continue;
             }
-            if (commandInfo.isAnnotationPresent(LimitToGuilds.class)) {
+            if (!settings.isRegisterGlobal() || commandInfo.isAnnotationPresent(LimitToGuilds.class)) {
                 guildSpecific.add(commandInfo);
                 continue;
             }
-            slashCommands.add(commandInfo.generateCommand());
+            globalCommands.add(commandInfo.generateCommand());
         }
-        return cachedGuildCommands = Pair.of(slashCommands.toArray(new SlashCommandData[0]), guildSpecific.toArray(new CommandInfo[0]));
+        return cachedGuildCommands = Pair.of(globalCommands.toArray(new SlashCommandData[0]), guildSpecific.toArray(new CommandInfo[0]));
     }
 
     public void commitCommands(JDA jda) {
-        for (Guild guild : jda.getGuilds()) {
-            commitCommands(guild);
-        }
-        if (!autoRegisteredGlobal) {
-            commitGlobal();
-            autoRegisteredGlobal = true;
+        if (settings.isRegisterGlobal()) {
+            if (!autoRegisteredGlobal) {
+                commitGlobalCommands();
+                autoRegisteredGlobal = true;
+            }
+        } else {
+            try {
+                jda.awaitReady();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            for (Guild guild : jda.getGuilds()) {
+                commitGuildCommands(guild);
+            }
         }
     }
 
     public void commitCommands() {
+        registerLastCommands();
         if (settings.getShardManager() != null) {
             settings.getShardManager().getShards().forEach(this::commitCommands);
         } else if (settings.getJda() != null) {
@@ -299,17 +313,21 @@ public class JDACommand {
         }
     }
 
-    public void commitCommands(Guild guild) { // actually register the commands to discord
-        registerLastCommands();
-        System.out.println("Committing commands for guild " + guild.getName());
-        CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
+    public void commitGuildCommands(Guild guild) { // actually register the commands to discord
         Pair<SlashCommandData[], CommandInfo[]> commands = generateGuildCommands();
-        System.out.println("Found " + commands.getLeft().length + " commands and " + commands.getRight().length + " guild specific commands");
+        if (commands.getRight().length == 0) {
+            return;
+        }
+        CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
         for (SlashCommandData slashCommandData : commands.getLeft()) {
             commandListUpdateAction = commandListUpdateAction.addCommands(slashCommandData);
         }
+        int i = 0;
         for (CommandInfo commandInfo : commands.getRight()) {
-            if (commandInfo.isAnnotationPresent(LimitToGuilds.class)) {
+            if (!settings.isRegisterGlobal()) {
+                commandListUpdateAction = commandListUpdateAction.addCommands(commandInfo.generateCommand());
+                i++;
+            } else if (commandInfo.isAnnotationPresent(LimitToGuilds.class)) {
                 LimitToGuilds limitToGuilds = commandInfo.getAnnotation(LimitToGuilds.class);
                 long[] guilds = limitToGuilds.value();
                 boolean found = false;
@@ -323,19 +341,15 @@ public class JDACommand {
                     continue;
                 }
                 commandListUpdateAction = commandListUpdateAction.addCommands(commandInfo.generateCommand());
+                i++;
             }
         }
-        commandListUpdateAction.queue(e -> {
-            System.out.println("Successfully registered commands for guild " + guild.getName());
-        }, e -> {
-            System.err.println("Failed to register commands for guild " + guild.getName());
-        });
+        int finalI = i;
+        commandListUpdateAction.queue();
     }
 
-    public void commitGlobal() {
-        List<CommandInfo> globalCommands = commandMap.values().stream().filter(
-                cmd -> !cmd.getAnnotation().guildOnly()
-        ).collect(Collectors.toList());
+    public void commitGlobalCommands() {
+        Pair<SlashCommandData[], CommandInfo[]> commands = generateGuildCommands();
         JDA jda;
         if (settings.getShardManager() != null) {
             jda = settings.getShardManager().getShards().get(0);
@@ -345,7 +359,7 @@ public class JDACommand {
             throw new IllegalStateException("No shard manager or jda instance found");
         }
         CommandListUpdateAction commandListUpdateAction = jda.updateCommands();
-        for (CommandInfo globalCommand : globalCommands) {
+        for (CommandInfo globalCommand : commands.getRight()) {
             commandListUpdateAction = commandListUpdateAction.addCommands(globalCommand.generateCommand());
         }
         commandListUpdateAction.queue();

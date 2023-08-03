@@ -17,7 +17,6 @@ public class CommandListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // event.deferReply().queue();
-        System.out.println("Received slash command interaction " + event.getCommandString() + " | " + event.getSubcommandName() + " | " + event.getSubcommandGroup());
         boolean hasSubCommand = event.getSubcommandName() != null;
         boolean hasSubGroup = event.getSubcommandGroup() != null;
         List<String> searchList = new ArrayList<>();
@@ -28,7 +27,7 @@ public class CommandListener extends ListenerAdapter {
             searchList.add(event.getSubcommandName());
         BaseCommandInfo commandInfo = jdaCommand.resolveCommand(searchList.toArray(new String[0]));
         if (!(commandInfo instanceof ExecutableCommand)) {
-            event.reply("Command resolved but not executable! This shouldn't happen!").queue(); // TODO error log
+            event.reply("Command resolved but not executable! This shouldn't happen!").setEphemeral(true).queue(); // TODO error log
             return;
         }
         ExecutableCommand command = (ExecutableCommand) commandInfo;
@@ -52,7 +51,7 @@ public class CommandListener extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         super.onGuildJoin(event);
         if (jdaCommand.getSettings().isCommitOnJoin()) {
-            jdaCommand.commitCommands(event.getGuild());
+            jdaCommand.commitGuildCommands(event.getGuild());
         }
     }
 }

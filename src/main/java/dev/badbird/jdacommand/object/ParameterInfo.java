@@ -40,7 +40,6 @@ public class ParameterInfo {
 
     public OptionType resolveType() {
         Provider<?> provider = getProvider();
-        System.out.println("Provider is " + provider);
         if (provider != null)
             return provider.getOptionType(this);
         return null;

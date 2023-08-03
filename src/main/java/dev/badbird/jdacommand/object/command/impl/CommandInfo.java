@@ -7,7 +7,6 @@ import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.BaseCommandInfo;
 import dev.badbird.jdacommand.object.command.ExecutableCommand;
 import dev.badbird.jdacommand.util.ParameterUtil;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -97,6 +96,10 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
+        if (getAnnotation().guildOnly() && event.getGuild() == null) {
+            event.reply("This command can only be used in a guild!").queue();
+            return;
+        }
         ExecutionContext context = new ExecutionContext(event, this);
         if (isAnnotationPresent(DeferReply.class)) {
             if (getAnnotation(DeferReply.class).value()) {

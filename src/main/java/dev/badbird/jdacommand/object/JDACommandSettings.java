@@ -8,10 +8,12 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder(builderMethodName = "_builder", access = AccessLevel.PRIVATE)
+@Builder(builderMethodName = "")
 public class JDACommandSettings {
     @Builder.Default
     private boolean waitForJda = true;
+    @Builder.Default
+    private boolean registerGlobal = false; // public commands take up to an hour to register, use guild commands for testing
     @Builder.Default
     private boolean registerDefaultProviders = true;
     @Builder.Default
@@ -20,15 +22,18 @@ public class JDACommandSettings {
     private ShardManager shardManager; // if you want to use the shard manager instead of the jda instance
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
-        return _builder().jda(jda);
+        return new JDACommandSettingsBuilder().jda(jda);
     }
     public static JDACommandSettingsBuilder builder(ShardManager shardManager) {
-        return _builder().shardManager(shardManager);
+        return new JDACommandSettingsBuilder().shardManager(shardManager);
     }
 
     public static class JDACommandSettingsBuilder {
         public JDACommandSettings create() { // workaround for the accesslevel set to private
             return build();
+        }
+        private static JDACommandSettingsBuilder __builder() {
+            return new JDACommandSettingsBuilder();
         }
     }
 }
