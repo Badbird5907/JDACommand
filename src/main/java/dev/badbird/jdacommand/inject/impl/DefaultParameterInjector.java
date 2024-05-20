@@ -1,13 +1,14 @@
-package dev.badbird.jdacommand.object.resolver.impl;
+package dev.badbird.jdacommand.inject.impl;
 
+import dev.badbird.jdacommand.inject.ParameterInjector;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.object.ParameterContext;
-import dev.badbird.jdacommand.object.resolver.ParameterResolver;
 import dev.badbird.jdacommand.provider.Provider;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class DefaultParameterResolver implements ParameterResolver {
-    public static final DefaultParameterResolver INSTANCE = new DefaultParameterResolver();
+public class DefaultParameterInjector implements ParameterInjector {
+    public static final DefaultParameterInjector INSTANCE = new DefaultParameterInjector();
+
     @Override
     public Object resolve(SlashCommandInteractionEvent event, ParameterContext parameter, ExecutionContext context) {
         Provider<?> provider = parameter.getParameterInfo().getProvider();
@@ -21,5 +22,10 @@ public class DefaultParameterResolver implements ParameterResolver {
             return obj.getClass().cast(obj);
         }
         return obj;
+    }
+
+    @Override
+    public boolean supports(ParameterContext parameter) {
+        return parameter.getParameterInfo().getProvider() != null;
     }
 }

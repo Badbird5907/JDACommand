@@ -5,8 +5,8 @@ import dev.badbird.jdacommand.annotation.Arg;
 import dev.badbird.jdacommand.annotation.MaxLength;
 import dev.badbird.jdacommand.annotation.MinLength;
 import dev.badbird.jdacommand.annotation.Range;
-import dev.badbird.jdacommand.object.resolver.ParameterResolver;
-import dev.badbird.jdacommand.object.resolver.impl.DefaultParameterResolver;
+import dev.badbird.jdacommand.inject.ParameterInjector;
+import dev.badbird.jdacommand.inject.impl.DefaultParameterInjector;
 import dev.badbird.jdacommand.provider.Provider;
 import dev.badbird.jdacommand.util.Primitives;
 import lombok.Getter;
@@ -95,9 +95,5 @@ public class ParameterInfo {
             alreadyFoundProvider = true;
         }
         return provider;
-    }
-
-    public ParameterResolver getResolver() {
-        return DefaultParameterResolver.INSTANCE;
     }
 }

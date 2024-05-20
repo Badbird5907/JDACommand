@@ -1,14 +1,13 @@
 package dev.badbird.jdacommand.object;
 
+import dev.badbird.jdacommand.inject.DIFramework;
 import dev.badbird.jdacommand.util.ReturnableTypeCallback;
 import lombok.*;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 @Getter
 @Setter
@@ -26,6 +25,8 @@ public class JDACommandSettings {
     private ShardManager shardManager; // if you want to use the shard manager instead of the jda instance
     @Builder.Default
     private List<ReturnableTypeCallback<Boolean, ExecutionContext>> preProcessors = new ArrayList<>(), postProcessors = new ArrayList<>();
+
+    private DIFramework dependencyInjector;
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
         return new JDACommandSettingsBuilder().jda(jda);

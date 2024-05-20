@@ -1,5 +1,6 @@
 package dev.badbird.jdacommand.util;
 
+import dev.badbird.jdacommand.inject.InjectorManager;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.object.ParameterContext;
 import dev.badbird.jdacommand.object.ParameterInfo;
@@ -18,7 +19,7 @@ public class ParameterUtil {
             try {
                 ParameterInfo parameter = parameters[i];
                 ParameterContext parameterContext = new ParameterContext(params, i, parameter, parameter.getParameter().getDeclaredAnnotations());
-                objects[i] = parameter.getResolver().resolve(event, parameterContext, context);
+                objects[i] = InjectorManager.getInstance().resolveParameter(event, parameterContext, context);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to resolve parameter " + parameters[i].getParameter().getName() + " in command " + context.getCommandName() + " (class " + context.getCommandInfo().getCommandClass().getName() + ")", e);
             }

@@ -1,6 +1,7 @@
 package dev.badbird.jdacommand;
 
 import dev.badbird.jdacommand.annotation.*;
+import dev.badbird.jdacommand.inject.InjectorManager;
 import dev.badbird.jdacommand.object.CommandListener;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.object.JDACommandSettings;
@@ -62,6 +63,9 @@ public class JDACommand {
                 throw new RuntimeException(e);
             }
         }
+        if (settings.getDependencyInjector() != null) {
+            InjectorManager.getInstance().handleDIFramework(settings.getDependencyInjector());
+        }
     }
 
     public JDACommand registerPackage(String packageName) {
@@ -98,6 +102,7 @@ public class JDACommand {
             if (shouldAutoInstantiate(clazz)) {
                 try {
                     object = clazz.getDeclaredConstructor().newInstance();
+                    InjectorManager.getInstance().injectInstance(object);
                 } catch (Exception e) {
                     // e.printStackTrace();
                     return this;
@@ -222,7 +227,9 @@ public class JDACommand {
         for (Class<?> declaredClass : object.getClass().getDeclaredClasses()) {
             if (shouldAutoInstantiate(declaredClass)) {
                 try {
-                    registerCmd(declaredClass.getDeclaredConstructor().newInstance());
+                    Object inst = declaredClass.getDeclaredConstructor().newInstance();
+                    InjectorManager.getInstance().injectInstance(inst);
+                    registerCmd(inst);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

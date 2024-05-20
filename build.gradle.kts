@@ -16,7 +16,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.dv8tion:JDA:5.0.0-beta.11")
+    compileOnly("net.dv8tion:JDA:5.0.0-beta.24")
+
+    compileOnly("com.google.inject:guice:7.0.0")
+
     implementation("org.reflections:reflections:0.10.2") {
         exclude("org.slf4j", "slf4j-api")
     }
