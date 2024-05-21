@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AutoInstantiate
 public @interface SubGroup {
     String name();
     String description() default "";

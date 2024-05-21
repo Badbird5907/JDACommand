@@ -20,6 +20,8 @@ dependencies {
 
     compileOnly("com.google.inject:guice:7.0.0")
 
+    implementation("com.google.guava:guava:33.2.0-jre")
+
     implementation("org.reflections:reflections:0.10.2") {
         exclude("org.slf4j", "slf4j-api")
     }
@@ -36,6 +38,7 @@ tasks.shadowJar {
     relocate("org.reflections", "dev.badbird.jdacommand.relocate.reflections")
     relocate("javassist", "dev.badbird.jdacommand.relocate.reflections.javassist")
     relocate("javax", "dev.badbird.jdacommand.relocate.reflections.javax")
+    relocate("com.google.common", "dev.badbird.jdacommand.relocate.guava")
 }
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")

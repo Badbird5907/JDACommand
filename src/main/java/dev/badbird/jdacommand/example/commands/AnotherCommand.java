@@ -5,6 +5,7 @@ import dev.badbird.jdacommand.annotation.DeferReply;
 import dev.badbird.jdacommand.annotation.SlashCommand;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 @DeferReply
 public class AnotherCommand {

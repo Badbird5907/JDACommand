@@ -1,7 +1,9 @@
-package dev.badbird.jdacommand.object;
+package dev.badbird.jdacommand.inject.parameter.impl;
 
 import dev.badbird.jdacommand.annotation.Arg;
 import dev.badbird.jdacommand.annotation.Required;
+import dev.badbird.jdacommand.inject.parameter.ParameterWrapper;
+import dev.badbird.jdacommand.object.ParameterInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ParameterContext {
+public class CommandParameterWrapper implements ParameterWrapper {
     private final Parameter[] allParameters;
     private final int parameterIndex;
     private final ParameterInfo parameterInfo;
@@ -20,7 +22,7 @@ public class ParameterContext {
     private final List<? extends Annotation> annotations;
     private final boolean required;
 
-    public ParameterContext(Parameter[] allParameters, int parameterIndex, ParameterInfo parameterInfo, Annotation[] annotations) {
+    public CommandParameterWrapper(Parameter[] allParameters, int parameterIndex, ParameterInfo parameterInfo, Annotation[] annotations) {
         this.allParameters = allParameters;
         this.parameterIndex = parameterIndex;
         this.parameterInfo = parameterInfo;

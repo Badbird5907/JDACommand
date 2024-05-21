@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AutoInstantiate
 public @interface ExtendParent {
     String value();
     boolean inheritAnnotations() default true;

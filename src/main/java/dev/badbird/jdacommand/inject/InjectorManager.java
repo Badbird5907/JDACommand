@@ -2,8 +2,9 @@ package dev.badbird.jdacommand.inject;
 
 import dev.badbird.jdacommand.annotation.Arg;
 import dev.badbird.jdacommand.inject.impl.DefaultParameterInjector;
+import dev.badbird.jdacommand.inject.parameter.ParameterWrapper;
 import dev.badbird.jdacommand.object.ExecutionContext;
-import dev.badbird.jdacommand.object.ParameterContext;
+import dev.badbird.jdacommand.inject.parameter.impl.CommandParameterWrapper;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,13 +41,28 @@ public class InjectorManager {
     }
 
 
-    public Object resolveParameter(SlashCommandInteractionEvent event, ParameterContext parameter, ExecutionContext context) {
+    public Object resolveParameter(SlashCommandInteractionEvent event, CommandParameterWrapper parameter, ExecutionContext context) {
         if (parameter.hasAnnotation(Arg.class)) { // parameters annotated with @Arg are always resolved by the default parameter injector
             return DefaultParameterInjector.INSTANCE.resolve(event, parameter, context);
         }
         for (ParameterInjector parameterInjector : parameterInjectors) {
             if (parameterInjector.supports(parameter)) {
-                return parameterInjector.resolve(event, parameter, context);
+                Object o = parameterInjector.resolve(event, parameter, context);
+                if (o != null) {
+                    return o;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Object resolvePlainParameter(ParameterWrapper parameter, ExecutionContext context) {
+         for (ParameterInjector parameterInjector : parameterInjectors) {
+            if (parameterInjector.supports(parameter)) {
+                Object o = parameterInjector.resolvePlain(parameter, context);
+                if (o != null) {
+                    return o;
+                }
             }
         }
         return null;

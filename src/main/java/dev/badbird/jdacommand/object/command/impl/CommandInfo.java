@@ -7,6 +7,8 @@ import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.BaseCommandInfo;
 import dev.badbird.jdacommand.object.command.ExecutableCommand;
+import dev.badbird.jdacommand.session.ExecutionSession;
+import dev.badbird.jdacommand.session.ExecutionSessionHandler;
 import dev.badbird.jdacommand.util.ParameterUtil;
 import dev.badbird.jdacommand.util.ReturnableTypeCallback;
 import lombok.Getter;
@@ -23,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -30,13 +33,13 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
     private SlashCommand annotation;
     private Map<Class<? extends Annotation>, Annotation> annotations;
 
-    private Object instance;
+    private Class<?> clazz;
     private Method method;
     private List<ParameterInfo> parameters;
 
-    public CommandInfo(SlashCommand annotation, Object object) {
+    public CommandInfo(SlashCommand annotation, Class<?> clazz) {
         this.annotation = annotation;
-        this.instance = object;
+        this.clazz = clazz;
     }
 
     public OptionData[] generateOptions() {
@@ -116,8 +119,10 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
             }
         }
         Object[] args = ParameterUtil.resolveParameters(event, parameters.toArray(new ParameterInfo[0]), context);
+        ExecutionSession session = ExecutionSessionHandler.INSTANCE.newSession(clazz, context);
+
         try {
-            method.invoke(instance, args);
+            session.execute(args, method);
             for (ReturnableTypeCallback<Boolean, ExecutionContext> postProcessor : jdaCommand.getSettings().getPostProcessors()) {
                 if (!postProcessor.call(context)) {
                     return;

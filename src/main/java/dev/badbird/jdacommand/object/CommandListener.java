@@ -1,12 +1,15 @@
 package dev.badbird.jdacommand.object;
 
 import dev.badbird.jdacommand.JDACommand;
+import dev.badbird.jdacommand.util.ButtonHandler;
 import dev.badbird.jdacommand.object.command.BaseCommandInfo;
 import dev.badbird.jdacommand.object.command.ExecutableCommand;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +51,15 @@ public class CommandListener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildJoin(GuildJoinEvent event) {
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        if (event.getButton().getId() == null) return;
+        if (event.getButton().getId().startsWith("jdacmd:")) {
+            ButtonHandler.INSTANCE.handleButton(event);
+        }
+    }
+
+    @Override
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
         if (jdaCommand.getSettings().isCommitOnJoin()) {
             jdaCommand.commitGuildCommands(event.getGuild());

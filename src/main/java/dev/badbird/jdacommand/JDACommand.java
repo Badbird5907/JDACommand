@@ -11,11 +11,11 @@ import dev.badbird.jdacommand.object.command.impl.CommandInfo;
 import dev.badbird.jdacommand.object.command.impl.SubGroupInfo;
 import dev.badbird.jdacommand.provider.Provider;
 import dev.badbird.jdacommand.provider.impl.*;
+import dev.badbird.jdacommand.session.ExecutionSessionHandler;
 import dev.badbird.jdacommand.util.Primitives;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -27,20 +27,18 @@ import org.reflections.util.FilterBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 @Getter
 public class JDACommand {
     private final Map<String, CommandInfo> commandMap = new ConcurrentHashMap<>();
     private final Map<Class<?>, Provider<?>> argumentProviders = new ConcurrentHashMap<>();
-    private final List<Object> registerLast = new ArrayList<>();
+    private final List<Class<?>> registerLast = new ArrayList<>();
     private boolean autoRegisteredGlobal = false;
     private Pair<SlashCommandData[], CommandInfo[]> cachedGuildCommands;
     private List<String> registered = new ArrayList<>(); // prevent stack overflow
@@ -66,6 +64,7 @@ public class JDACommand {
         if (settings.getDependencyInjector() != null) {
             InjectorManager.getInstance().handleDIFramework(settings.getDependencyInjector());
         }
+        ExecutionSessionHandler.INSTANCE.init(this);
     }
 
     public JDACommand registerPackage(String packageName) {
@@ -94,40 +93,24 @@ public class JDACommand {
         return this;
     }
 
-    public JDACommand registerCmd(Object object) {
-        if (object == null) return this;
-        // if this is a class, instantiate it
-        if (object instanceof Class<?>) {
-            Class<?> clazz = (Class<?>) object;
-            if (shouldAutoInstantiate(clazz)) {
-                try {
-                    object = clazz.getDeclaredConstructor().newInstance();
-                    InjectorManager.getInstance().injectInstance(object);
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                    return this;
-                }
-            } else {
-                // throw new IllegalArgumentException("Class " + clazz.getName() + " is not annotated with AutoInstantiate, and cannot be registered.");
-                return this;
-            }
-        }
-        registerLast.remove(object);
+    public JDACommand registerCmd(Class<?> clazz) {
+        if (clazz == null) return this;
+        registerLast.remove(clazz);
         Map<Class<? extends Annotation>, Annotation> distributedAnnotations = new HashMap<>();
-        boolean classHasMainCommand = object.getClass().isAnnotationPresent(SlashCommand.class);
-        ExtendParent extendParent = object.getClass().getDeclaredAnnotation(ExtendParent.class);
-        SubGroup subGroup = object.getClass().getDeclaredAnnotation(SubGroup.class);
+        boolean classHasMainCommand = clazz.isAnnotationPresent(SlashCommand.class);
+        ExtendParent extendParent = clazz.getDeclaredAnnotation(ExtendParent.class);
+        SubGroup subGroup = clazz.getDeclaredAnnotation(SubGroup.class);
         SlashCommand parent = null;
-        boolean isSubClass = object.getClass().getDeclaringClass() != null;
+        boolean isSubClass = clazz.getDeclaringClass() != null;
         CommandInfo parentInfo = null;
         if (extendParent != null) {
             String name = extendParent.value();
             if (name.isEmpty()) {
-                throw new IllegalArgumentException("Class " + object.getClass().getName() + " has an ExtendParent annotation, but no name was specified.");
+                throw new IllegalArgumentException("Class " + clazz.getName() + " has an ExtendParent annotation, but no name was specified.");
             }
             parentInfo = commandMap.get(name.toLowerCase());
             if (parentInfo == null) { // hasn't been registered yet, defer
-                registerLast.add(object);
+                registerLast.add(clazz);
                 return this;
             }
             parent = parentInfo.getAnnotation();
@@ -137,15 +120,15 @@ public class JDACommand {
             }
         }
         if (subGroup != null) {
-            classHasMainCommand = isSubClass && object.getClass().getDeclaringClass().isAnnotationPresent(SlashCommand.class);
+            classHasMainCommand = isSubClass && clazz.getDeclaringClass().isAnnotationPresent(SlashCommand.class);
             if (!classHasMainCommand && subGroup.name().isEmpty()) {
-                throw new IllegalArgumentException("Class " + object.getClass().getName() + " has a SubGroup annotation, but isn't a subclass of a parent annotation, and doesn't declare a parent command.");
+                throw new IllegalArgumentException("Class " + clazz.getName() + " has a SubGroup annotation, but isn't a subclass of a parent annotation, and doesn't declare a parent command.");
             }
             if (classHasMainCommand)
-                parentInfo = commandMap.get(object.getClass().getDeclaringClass().getDeclaredAnnotation(SlashCommand.class).name().toLowerCase());
+                parentInfo = commandMap.get(clazz.getDeclaringClass().getDeclaredAnnotation(SlashCommand.class).name().toLowerCase());
             else parentInfo = commandMap.get(subGroup.parent().toLowerCase());
             if (parentInfo == null) {
-                registerLast.add(object);
+                registerLast.add(clazz);
                 return this;
             }
             parent = parentInfo.getAnnotation();
@@ -154,35 +137,35 @@ public class JDACommand {
             }
         }
         // annotations on the class itself take precedence over inherited annotations
-        for (Annotation annotation : object.getClass().getAnnotations()) {
+        for (Annotation annotation : clazz.getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(DistributeOnMethods.class)) {
                 distributedAnnotations.put(annotation.annotationType(), annotation);
             }
         }
         if (classHasMainCommand && extendParent == null && subGroup == null) { // register root command
             boolean subCommandsFound = false;
-            for (Method declaredMethod : object.getClass().getDeclaredMethods()) {
+            for (Method declaredMethod : clazz.getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(SlashCommand.class)) {
                     subCommandsFound = true;
                     break;
                 }
             }
             if (!subCommandsFound) {
-                throw new IllegalArgumentException("Class " + object.getClass().getName() + " has a SlashCommand/ExtendParent parent annotation, but no methods with SlashCommand annotations found.");
+                throw new IllegalArgumentException("Class " + clazz.getName() + " has a SlashCommand/ExtendParent parent annotation, but no methods with SlashCommand annotations found.");
             }
-            parent = object.getClass().getAnnotation(SlashCommand.class);
+            parent = clazz.getAnnotation(SlashCommand.class);
             Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
-            for (Annotation declaredAnnotation : object.getClass().getDeclaredAnnotations()) {
+            for (Annotation declaredAnnotation : clazz.getDeclaredAnnotations()) {
                 annotations.put(declaredAnnotation.annotationType(), declaredAnnotation);
             }
             annotations.putAll(distributedAnnotations);
             parentInfo = commandMap.get(parent.name().toLowerCase());
             if (parentInfo == null) {
-                parentInfo = new CommandInfo(parent, object);
+                parentInfo = new CommandInfo(parent, clazz);
             }
             parentInfo.setAnnotations(annotations);
         }
-        for (Method method : object.getClass().getDeclaredMethods()) {
+        for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(SlashCommand.class)) {
                 SlashCommand slashCommand = method.getAnnotation(SlashCommand.class);
                 if (slashCommand.name().contains(" ")) { // TODO: register as subcommand/group
@@ -196,10 +179,9 @@ public class JDACommand {
                 for (Annotation declaredAnnotation : method.getDeclaredAnnotations()) {
                     annotations.put(declaredAnnotation.annotationType(), declaredAnnotation);
                 }
-                CommandInfo commandInfo = new CommandInfo(slashCommand, object);
+                CommandInfo commandInfo = new CommandInfo(slashCommand, clazz);
                 commandInfo.setAnnotations(annotations);
                 commandInfo.setMethod(method);
-                commandInfo.setInstance(object);
                 commandInfo.setParameters(parameters);
                 if (subGroup == null) {
                     if (classHasMainCommand) {
@@ -224,58 +206,10 @@ public class JDACommand {
         if (parentInfo != null) {
             commandMap.put(parentInfo.getName().toLowerCase(), parentInfo);
         }
-        for (Class<?> declaredClass : object.getClass().getDeclaredClasses()) {
-            if (shouldAutoInstantiate(declaredClass)) {
-                try {
-                    Object inst = declaredClass.getDeclaredConstructor().newInstance();
-                    InjectorManager.getInstance().injectInstance(inst);
-                    registerCmd(inst);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        for (Class<?> declaredClass : clazz.getDeclaredClasses()) {
+            registerCmd(declaredClass);
         }
         return this;
-    }
-
-    public boolean shouldAutoInstantiate(Class<?> clazz) { // TODO add a configurable callback for this
-        if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnnotation()) {
-            return false;
-        }
-        try {
-            clazz.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            return false;
-        }
-        if (clazz.isAnnotationPresent(AutoInstantiate.class)) {
-            return clazz.getDeclaredAnnotation(AutoInstantiate.class).value();
-        }
-        boolean should = false;
-        for (Annotation declaredAnnotation : clazz.getAnnotations()) {
-            if (declaredAnnotation.annotationType().isAnnotationPresent(AutoInstantiate.class)) {
-                AutoInstantiate autoInstantiate = declaredAnnotation.annotationType().getDeclaredAnnotation(AutoInstantiate.class);
-                if (autoInstantiate.value()) {
-                    should = true;
-                }
-                if (autoInstantiate.forceStop()) {
-                    return false;
-                }
-            }
-        }
-        for (Method declaredMethod : clazz.getDeclaredMethods()) {
-            for (Annotation declaredAnnotation : declaredMethod.getDeclaredAnnotations()) {
-                if (declaredAnnotation.annotationType().isAnnotationPresent(AutoInstantiate.class)) {
-                    AutoInstantiate autoInstantiate = declaredAnnotation.annotationType().getDeclaredAnnotation(AutoInstantiate.class);
-                    if (autoInstantiate.value()) {
-                        should = true;
-                    }
-                    if (autoInstantiate.forceStop()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return should;
     }
 
     public void registerLastCommands() {

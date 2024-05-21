@@ -3,7 +3,7 @@ package dev.badbird.jdacommand.provider.impl;
 import dev.badbird.jdacommand.JDACommand;
 import dev.badbird.jdacommand.annotation.DefaultNumber;
 import dev.badbird.jdacommand.object.ExecutionContext;
-import dev.badbird.jdacommand.object.ParameterContext;
+import dev.badbird.jdacommand.inject.parameter.impl.CommandParameterWrapper;
 import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.impl.CommandInfo;
 import dev.badbird.jdacommand.provider.Provider;
@@ -16,11 +16,11 @@ public class NumberProvider {
     public static class IntProvider implements Provider<Integer> {
 
         @Override
-        public Integer provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Integer provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return (int) parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return (int) commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Integer) Primitives.getDefaultValue(int.class);
                 }
@@ -36,11 +36,11 @@ public class NumberProvider {
     public static class FloatProvider implements Provider<Float> {
 
         @Override
-        public Float provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Float provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return (float) parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return (float) commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Float) Primitives.getDefaultValue(float.class);
                 }
@@ -61,11 +61,11 @@ public class NumberProvider {
     public static class DoubleProvider implements Provider<Double> {
 
         @Override
-        public Double provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Double provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Double) Primitives.getDefaultValue(double.class);
                 }
@@ -81,11 +81,11 @@ public class NumberProvider {
     public static class LongProvider implements Provider<Long> {
 
         @Override
-        public Long provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Long provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return (long) parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return (long) commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Long) Primitives.getDefaultValue(long.class);
                 }
@@ -101,11 +101,11 @@ public class NumberProvider {
     public static class ShortProvider implements Provider<Short> {
 
         @Override
-        public Short provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Short provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return (short) parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return (short) commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Short) Primitives.getDefaultValue(short.class);
                 }
@@ -126,11 +126,11 @@ public class NumberProvider {
     public static class ByteProvider implements Provider<Byte> {
 
         @Override
-        public Byte provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Byte provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option == null) {
-                if (parameterContext.hasAnnotation(DefaultNumber.class)) {
-                    return (byte) parameterContext.getAnnotation(DefaultNumber.class).value();
+                if (commandParameterContext.hasAnnotation(DefaultNumber.class)) {
+                    return (byte) commandParameterContext.getAnnotation(DefaultNumber.class).value();
                 } else {
                     return (Byte) Primitives.getDefaultValue(byte.class);
                 }

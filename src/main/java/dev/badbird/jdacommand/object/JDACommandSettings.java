@@ -25,8 +25,11 @@ public class JDACommandSettings {
     private ShardManager shardManager; // if you want to use the shard manager instead of the jda instance
     @Builder.Default
     private List<ReturnableTypeCallback<Boolean, ExecutionContext>> preProcessors = new ArrayList<>(), postProcessors = new ArrayList<>();
-
     private DIFramework dependencyInjector;
+    @Builder.Default
+    private int maxExecutionCacheSize = 1500;
+    @Builder.Default
+    private int maxExecutionMinutes = 30;
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
         return new JDACommandSettingsBuilder().jda(jda);

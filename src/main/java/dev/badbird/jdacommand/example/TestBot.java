@@ -18,7 +18,7 @@ public class TestBot {
         JDA jda = JDABuilder.createDefault(token).build();
         JDACommand jdaCommand = new JDACommand(JDACommandSettings.builder(jda).create());
         // jdaCommand.registerCmd(new TestCommand());
-        jdaCommand.registerCmd(new AnotherCommand());
+        jdaCommand.registerCmd(AnotherCommand.class);
         jda.awaitReady();
         jdaCommand.commitCommands();
     }

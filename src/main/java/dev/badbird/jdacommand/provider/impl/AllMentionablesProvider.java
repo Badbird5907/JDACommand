@@ -4,7 +4,7 @@ import dev.badbird.jdacommand.JDACommand;
 import dev.badbird.jdacommand.annotation.Author;
 import dev.badbird.jdacommand.annotation.DefaultAuthor;
 import dev.badbird.jdacommand.object.ExecutionContext;
-import dev.badbird.jdacommand.object.ParameterContext;
+import dev.badbird.jdacommand.inject.parameter.impl.CommandParameterWrapper;
 import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.impl.CommandInfo;
 import dev.badbird.jdacommand.provider.Provider;
@@ -17,21 +17,19 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AllMentionablesProvider {
     public static class UserProvider implements Provider<User> {
 
         @Override
-        public User provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            Author author = parameterContext.getAnnotation(Author.class);
+        public User provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            Author author = commandParameterContext.getAnnotation(Author.class);
             if (parameterInfo.isArgument()) {
-                OptionMapping option = context.getOption(parameterContext.getArgName());
+                OptionMapping option = context.getOption(commandParameterContext.getArgName());
                 if (option != null) {
                     return option.getAsUser();
                 } else {
-                    if (author != null || parameterContext.hasAnnotation(DefaultAuthor.class)) {
+                    if (author != null || commandParameterContext.hasAnnotation(DefaultAuthor.class)) {
                         return context.getEvent().getUser();
                     }
                 }
@@ -52,14 +50,14 @@ public class AllMentionablesProvider {
     public static class MemberProvider implements Provider<Member> {
 
         @Override
-        public Member provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            Author author = parameterContext.getAnnotation(Author.class);
+        public Member provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            Author author = commandParameterContext.getAnnotation(Author.class);
             if (parameterInfo.isArgument()) {
-                OptionMapping option = context.getOption(parameterContext.getArgName());
+                OptionMapping option = context.getOption(commandParameterContext.getArgName());
                 if (option != null) {
                     return option.getAsMember();
                 } else {
-                    if (author != null || parameterContext.hasAnnotation(DefaultAuthor.class)) {
+                    if (author != null || commandParameterContext.hasAnnotation(DefaultAuthor.class)) {
                         return context.getEvent().getMember();
                     }
                 }
@@ -79,8 +77,8 @@ public class AllMentionablesProvider {
 
     public static class ChannelProvider implements Provider<GuildChannelUnion> {
         @Override
-        public GuildChannelUnion provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public GuildChannelUnion provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option != null) {
                 return option.getAsChannel();
             }
@@ -100,8 +98,8 @@ public class AllMentionablesProvider {
 
     public static class RoleProvider implements Provider<Role> {
         @Override
-        public Role provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Role provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option != null) {
                 return option.getAsRole();
             }

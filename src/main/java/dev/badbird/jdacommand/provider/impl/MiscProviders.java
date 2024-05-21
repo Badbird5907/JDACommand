@@ -2,7 +2,7 @@ package dev.badbird.jdacommand.provider.impl;
 
 import dev.badbird.jdacommand.JDACommand;
 import dev.badbird.jdacommand.object.ExecutionContext;
-import dev.badbird.jdacommand.object.ParameterContext;
+import dev.badbird.jdacommand.inject.parameter.impl.CommandParameterWrapper;
 import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.object.command.impl.CommandInfo;
 import dev.badbird.jdacommand.provider.Provider;
@@ -14,8 +14,8 @@ public class MiscProviders {
     public static class AttachmentProvider implements Provider<Message.Attachment> {
 
         @Override
-        public Message.Attachment provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-            OptionMapping option = context.getOption(parameterContext.getArgName());
+        public Message.Attachment provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+            OptionMapping option = context.getOption(commandParameterContext.getArgName());
             if (option != null) {
                 return option.getAsAttachment();
             }

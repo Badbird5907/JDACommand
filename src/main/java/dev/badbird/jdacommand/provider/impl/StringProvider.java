@@ -2,7 +2,7 @@ package dev.badbird.jdacommand.provider.impl;
 
 import dev.badbird.jdacommand.object.command.impl.CommandInfo;
 import dev.badbird.jdacommand.object.ExecutionContext;
-import dev.badbird.jdacommand.object.ParameterContext;
+import dev.badbird.jdacommand.inject.parameter.impl.CommandParameterWrapper;
 import dev.badbird.jdacommand.object.ParameterInfo;
 import dev.badbird.jdacommand.provider.Provider;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 public class StringProvider implements Provider<String> {
     @Override
-    public String provide(ExecutionContext context, ParameterContext parameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
-        OptionMapping option = context.getEvent().getOption(parameterContext.getArgName());
+    public String provide(ExecutionContext context, CommandParameterWrapper commandParameterContext, CommandInfo commandInfo, ParameterInfo parameterInfo) {
+        OptionMapping option = context.getEvent().getOption(commandParameterContext.getArgName());
         if (option == null)
             return null;
         return option.getAsString();
