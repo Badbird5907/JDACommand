@@ -23,6 +23,10 @@ public class ExecutionSession {
         ExecutionSessionHandler.INSTANCE.removeSession(sessionId);
     }
 
+    public void renew() {
+        ExecutionSessionHandler.INSTANCE.renewSession(sessionId);
+    }
+
     protected void finalize() {
         throw new UnsupportedOperationException("Not implemented yet!");
     }

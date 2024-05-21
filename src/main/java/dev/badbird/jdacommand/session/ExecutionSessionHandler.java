@@ -44,4 +44,11 @@ public class ExecutionSessionHandler {
     public ExecutionSession getSession(String executionId) {
         return sessionCache.getIfPresent(UUID.fromString(executionId));
     }
+
+    public void renewSession(UUID sessionId) {
+        ExecutionSession session = sessionCache.getIfPresent(sessionId);
+        if (session != null) {
+            sessionCache.put(sessionId, session); // upsert
+        }
+    }
 }

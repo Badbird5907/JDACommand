@@ -31,6 +31,7 @@ public class ButtonHandler {
         if (session == null) { // session expired
             return;
         }
+        session.renew();
         Map<String, Method> buttons = session.getContext().getButtons();
         Method method = buttons.get(buttonId);
         if (method == null) {
