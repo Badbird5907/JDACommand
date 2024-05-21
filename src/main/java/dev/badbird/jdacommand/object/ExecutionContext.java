@@ -130,18 +130,21 @@ public class ExecutionContext {
         if (event.isAcknowledged())
             applyActionRows(event.getHook().sendMessage(message)).setEphemeral(ephemeral).queue();
         else applyActionRows(event.reply(message)).setEphemeral(ephemeral).queue();
+        finishAck();
     }
 
     public void reply(MessageEmbed embed, MessageEmbed... embeds) {
         if (event.isAcknowledged())
             applyActionRows(event.getHook().sendMessageEmbeds(embed, embeds)).queue();
         else applyActionRows(event.replyEmbeds(embed, embeds)).queue();
+        finishAck();
     }
 
     public void replyEphemeralEmbeds(MessageEmbed embed, MessageEmbed... embeds) {
         if (event.isAcknowledged())
             applyActionRows(event.getHook().sendMessageEmbeds(embed, embeds)).setEphemeral(true).queue();
         else applyActionRows(event.replyEmbeds(embed, embeds).setEphemeral(true)).queue();
+        finishAck();
     }
 
     public void setOriginal(String message) {
@@ -152,6 +155,7 @@ public class ExecutionContext {
             }
         }
         action.queue();
+        finishAck();
     }
 
     public void setOriginal(MessageEmbed... embeds) {
@@ -162,6 +166,11 @@ public class ExecutionContext {
             }
         }
         action.queue();
+        finishAck();
+    }
+
+    public void finishAck() {
+
     }
 
     public void deferReply() {

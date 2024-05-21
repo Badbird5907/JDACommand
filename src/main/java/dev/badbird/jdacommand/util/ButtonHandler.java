@@ -3,7 +3,8 @@ package dev.badbird.jdacommand.util;
 import dev.badbird.jdacommand.inject.InjectorManager;
 import dev.badbird.jdacommand.inject.parameter.ParameterWrapper;
 import dev.badbird.jdacommand.inject.parameter.impl.PlainParameterWrapper;
-import dev.badbird.jdacommand.object.command.impl.CommandInfo;
+import dev.badbird.jdacommand.object.ButtonExecutionContext;
+import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.session.ExecutionSession;
 import dev.badbird.jdacommand.session.ExecutionSessionHandler;
 import lombok.NoArgsConstructor;
@@ -39,10 +40,13 @@ public class ButtonHandler {
         }
         List<Object> args = new ArrayList<>();
         Parameter[] parameters = method.getParameters();
+        ButtonExecutionContext newCtx = new ButtonExecutionContext(session.getContext(), event);
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             if (parameter.getType().equals(ButtonInteractionEvent.class)) {
                 args.add(event);
+            } else if (parameter.getType().equals(ExecutionContext.class) || parameter.getType().equals(ButtonExecutionContext.class)) {
+                args.add(newCtx);
             } else {
                 ParameterWrapper parameterWrapper = new PlainParameterWrapper(parameters, i, parameter.getName(), Arrays.asList(parameter.getAnnotations()));
                 Object o = InjectorManager.getInstance().resolvePlainParameter(parameterWrapper, session.getContext());
