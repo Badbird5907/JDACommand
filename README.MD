@@ -9,3 +9,4 @@ Example bot: [here](https://github.com/Badbird5907/JDACommand/tree/master/src/ma
 # TODO
  - [ ] Add support for modifying SlashCommandData (maybe `@ModifyData public SlashCommandData modify(SlashCommandData data)`)
  - [ ] Add support for auto completion
+ - [ ] Callback to configure registering guild commands (alongside `@LimitToGuilds`)
