@@ -1,13 +1,10 @@
 package dev.badbird.jdacommand.example.commands;
 
 import dev.badbird.jdacommand.annotation.Arg;
-import dev.badbird.jdacommand.annotation.DeferReply;
 import dev.badbird.jdacommand.annotation.SlashCommand;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-@DeferReply
 public class AnotherCommand {
     @SlashCommand(name = "test", description = "test command")
     public void test(ExecutionContext ctx, @Arg(value = "i", description = "some value", required = false) VoiceChannel channel) {

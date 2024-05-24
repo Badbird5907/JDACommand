@@ -9,9 +9,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -27,8 +27,8 @@ import java.util.regex.Pattern;
 @Setter
 public class ExecutionContext {
     private final Member member;
-    private final SlashCommandInteractionEvent event;
-    private final MessageChannel channel;
+    private final GenericCommandInteractionEvent event;
+    private final Channel channel;
     private final Guild guild;
     private final ExecutableCommand executable;
 
@@ -36,7 +36,7 @@ public class ExecutionContext {
 
     private ExecutionSession session;
 
-    public ExecutionContext(SlashCommandInteractionEvent event, ExecutableCommand executable) {
+    public ExecutionContext(GenericCommandInteractionEvent event, ExecutableCommand executable) {
         this.event = event;
         this.member = event.getMember();
         this.channel = event.getChannel();

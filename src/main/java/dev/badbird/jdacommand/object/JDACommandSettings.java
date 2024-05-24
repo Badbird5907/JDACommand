@@ -8,6 +8,9 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 @Getter
 @Setter
@@ -30,6 +33,8 @@ public class JDACommandSettings {
     private int maxExecutionCacheSize = 1500;
     @Builder.Default
     private int maxExecutionMinutes = 30;
+    @Builder.Default
+    private ReturnableCallback<ExecutorService> executorService = () -> Executors.newFixedThreadPool(5);
 
     public static JDACommandSettingsBuilder builder(JDA jda) {
         return new JDACommandSettingsBuilder().jda(jda);
@@ -59,5 +64,9 @@ public class JDACommandSettings {
             postProcessors$set = true;
             return this;
         }
+    }
+
+    public static interface ReturnableCallback<R> {
+        R run();
     }
 }

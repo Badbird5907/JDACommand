@@ -1,5 +1,6 @@
 package dev.badbird.jdacommand.object;
 
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
 public class ButtonExecutionContext extends ExecutionContext {

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 @Getter
 public class JDACommand {
@@ -44,7 +45,7 @@ public class JDACommand {
     private List<String> registered = new ArrayList<>(); // prevent stack overflow
     @Getter
     private JDACommandSettings settings;
-
+    private ExecutorService executorService;
     public JDACommand(JDACommandSettings settings) {
         this.settings = settings;
         if (settings.getShardManager() != null)
@@ -65,6 +66,7 @@ public class JDACommand {
             InjectorManager.getInstance().handleDIFramework(settings.getDependencyInjector());
         }
         ExecutionSessionHandler.INSTANCE.init(this);
+        executorService = settings.getExecutorService().run();
     }
 
     public JDACommand registerPackage(String packageName) {
@@ -298,7 +300,7 @@ public class JDACommand {
                 i++;
             }
         }
-        int finalI = i;
+        System.out.println("Registering " + i + " guild commands for guild " + guild.getId());
         commandListUpdateAction.queue();
     }
 
@@ -313,8 +315,8 @@ public class JDACommand {
             throw new IllegalStateException("No shard manager or jda instance found");
         }
         CommandListUpdateAction commandListUpdateAction = jda.updateCommands();
-        for (CommandInfo globalCommand : commands.getRight()) {
-            commandListUpdateAction = commandListUpdateAction.addCommands(globalCommand.generateCommand());
+        for (SlashCommandData globalCommand : commands.getLeft()) {
+            commandListUpdateAction = commandListUpdateAction.addCommands(globalCommand);
         }
         commandListUpdateAction.queue();
     }

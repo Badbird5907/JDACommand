@@ -1,7 +1,6 @@
 package dev.badbird.jdacommand.object.command.impl;
 
 import dev.badbird.jdacommand.JDACommand;
-import dev.badbird.jdacommand.annotation.DeferReply;
 import dev.badbird.jdacommand.annotation.SlashCommand;
 import dev.badbird.jdacommand.object.ExecutionContext;
 import dev.badbird.jdacommand.object.ParameterInfo;
@@ -14,7 +13,6 @@ import dev.badbird.jdacommand.util.ReturnableTypeCallback;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -25,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -112,24 +109,28 @@ public class CommandInfo extends BaseCommandInfo implements ExecutableCommand {
                 return;
             }
         }
+        /*
         if (isAnnotationPresent(DeferReply.class)) {
             if (getAnnotation(DeferReply.class).value()) {
                 System.out.println("Deferring reply");
                 event.deferReply().queue();
             }
         }
+         */
         Object[] args = ParameterUtil.resolveParameters(event, parameters.toArray(new ParameterInfo[0]), context);
         ExecutionSession session = ExecutionSessionHandler.INSTANCE.newSession(clazz, context);
-
-        try {
-            session.execute(args, method);
-            for (ReturnableTypeCallback<Boolean, ExecutionContext> postProcessor : jdaCommand.getSettings().getPostProcessors()) {
-                if (!postProcessor.call(context)) {
-                    return;
+        event.deferReply().queue();
+        jdaCommand.getExecutorService().execute(() -> {
+            try {
+                session.execute(args, method);
+                for (ReturnableTypeCallback<Boolean, ExecutionContext> postProcessor : jdaCommand.getSettings().getPostProcessors()) {
+                    if (!postProcessor.call(context)) {
+                        return;
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 }
